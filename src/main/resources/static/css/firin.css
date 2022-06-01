@@ -1,0 +1,77 @@
+ body {
+     background-color: #fffffa !important;
+ }
+
+.icon-red {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: crimson;
+}
+.icon-yesil {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: darkseagreen;
+}
+.icon-mavi {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: blue;
+}
+
+.icon-gri {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: gray;
+}
+.ust_baslik {
+    font-family: 'Comfortaa', cursive;
+    font-size: 2em;
+    font-weight: bolder;
+    color: #000020;
+}
+
+.border-koseli-1px {
+    border:1px solid #000048 !important;
+}
+
+.border-koseli-2px {
+    border:2px solid #000048 !important;
+    border-top-left-radius: 1em;
+}
+
+.border-top-2px {
+    border: 0 !important;
+    border-top:2px solid #000048 !important;
+}
+
+.but-purple {
+    background-color: #9C27B0 !important;
+    color: white !important;
+}
+
+ .but-deep-purple {
+     background-color: #673AB7 !important;
+     color: white !important;
+ }
+
+ .but-indigo {
+     background-color: #3F51B5 !important;
+     color: white !important;
+ }
+
+.borderless {
+    border:0 !important;
+}
+
+.navbar-custom-background {
+    background-color: #000048;
+}
+
+tr > td {
+    border: 1px solid lightgray;
+}
+
+ tr.pasif {
+     color: darkgray;
+     background-color: #E0F2F1;
+ }
