@@ -1,6 +1,6 @@
 package com.mordeninaf.boot.firin.repository;
 
-import com.mordeninaf.boot.firin.entity.Urun;
+import com.mordeninaf.boot.firin.model.Urun;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

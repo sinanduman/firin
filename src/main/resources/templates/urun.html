@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Firin Cari Hesap Uygulaması</title>
+    <title>Kete Ekmek</title>
+    <link rel="icon" th:href="@{/icon/favicon.ico}" type="image/x-icon">
     <link th:rel="stylesheet" th:href="@{/css/firin.css}" type="text/css"/>
     <link th:rel="stylesheet" th:href="@{/css/bootstrap.min.css}" type="text/css"/>
     <link th:rel="stylesheet" th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css}" type="text/css"/>
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300&display=swap" rel="stylesheet">
@@ -17,98 +17,141 @@
 <!-- Navigation -->
 <nav class="navbar navbar-expand-lg navbar-dark static-top navbar-custom-background">
     <div class="container">
-        <a class="navbar-brand" href="/"><i class="fa-solid fa-house"></i></a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
-                aria-controls="navbarResponsive"
-                aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarResponsive">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="/cari">Cari Hesap</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/siparis">Sipariş</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/odeme">Ödeme</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="/urun">Ürünler</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/rapor">Rapor</a>
-                </li>
-            </ul>
+        <div class="col-md-10 mx-auto mt-2">
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="navbar-brand nav-link" href="/"><i class="fa-solid fa-house"></i></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/cari">Cari Hesap <i class="fa-solid fa-user-tie"></i></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/urun">Ürünler <i class="fa-solid fa-cookie-bite"></i></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/siparis">Sipariş <i class="fa-solid fa-receipt"></i></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tahsilat">Tahsilat <i class="fa-solid fa-cash-register"></i></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/rapor">Rapor <i class="fa-solid fa-table"></i></a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 </nav>
 
 <div class="container">
     <div class="row">
-        <div class="alert alert-primary" role="alert" th:text="${success}" th:if="${success}"></div>
+        <div class="alert alert-success" role="alert" th:text="${success}" th:if="${success}"></div>
         <div class="alert alert-danger" role="alert" th:text="${error}" th:if="${error}"></div>
     </div>
 
-    <div class="row" style="border:0px solid blue;">
-        <div class="col-md-6 mx-auto mt-2">
-            <div class="row mt-auto"><span class="ust_baslik">ÜRÜN YÖNETİMİ</span></div>
+    <div class="row">
+        <div class="col-md-10 mx-auto mt-2">
+            <div class="row mt-auto"><span class="ust_baslik txt-deep-purple">Ürün</span></div>
             <div class="row mt-0 p-0 border-koseli-2px">
-            <form method="post" th:action="@{/urun}" th:object="${urunObj}" id="urunForm" name="urunForm" class="col card p-2 m-2 borderless">
+                <form method="post" th:action="@{/urun}" th:object="${urunObj}" id="urunForm" name="urunForm"
+                      class="col card p-2 m-2 borderless">
 
-                <div class="input-group input-group-sm mb-2">
-                    <input th:id="urunAd" th:name="urunAd" placeholder="Ürün Adı" required type="text" th:value="${urun ne null} ? ${urun.getUrunAd()} : '' " class="form-control"/>
-                    <input th:id="id" th:name="id" type="hidden" th:value="${urun ne null} ? ${urun.getId()} : '' " class="form-control"/>
-                </div>
-
-                <div class="input-group input-group-sm mb-2">
-                    <select th:name="urunAktif" class="form-control form-select">
-                        <th:block th:if="${urun eq null}">
-                            <option selected value="1">Aktif</option>
-                            <option value="0">Pasif</option>
-                        </th:block>
-                        <th:block th:if="${urun ne null}">
-                            <option th:if="${urun.getUrunAktif() eq 0}" value="0" selected>Pasif</option>
-                            <option th:if="${urun.getUrunAktif() eq 0}" value="1">Aktif</option>
-                            <option th:if="${urun.getUrunAktif() eq 1}" value="1" selected>Aktif</option>
-                            <option th:if="${urun.getUrunAktif() eq 1}" value="0">Pasif</option>
-                        </th:block>
-                    </select>
-                </div>
-                <div class="row" style="border:0px solid green;">
-                    <div class="mx-auto mt-2" style="border:0px solid red;">
-                        <button class="btn btn-sm btn-dark" id="urunYeni" th:href="@{/index}"><i class="fa-solid fa-circle-plus"></i></button>
-                        <button class="btn btn-sm btn-danger" id="urunIptal" th:href="@{/index}"><i class="fa-solid fa-cancel"></i></button>
-                        <button class="btn btn-sm btn-primary" type="submit" id="urunKaydet"><i class="fa-solid fa-check"></i></button>
+                    <div class="input-group mb-2">
+                        <span class="input-group-text but-deep-purple border-koseli-1px width150px">Adı (*)</span>
+                        <input th:id="urunAd" th:name="urunAd" th:autocomplete="off" required type="text"
+                               th:value="${urun ne null} ? ${urun.getUrunAd()} : '' " class="form-control border-koseli-1px"/>
                     </div>
-                </div>
-            </form>
 
-            <table class="table table-striped table-borderless">
-                <tr>
-                    <th>ID</th>
-                    <th>Ürün Adı</th>
-                    <th>Durum</th>
-                    <th>Aksiyon</th>
-                </tr>
-                <tr th:if="${#lists.isEmpty(urunlist)}">
-                    <td colspan="5">No Records found. Add some...!</td>
-                </tr>
-                <tr th:each="item : ${urunlist}">
-                    <td th:text="${item.getId()}"></td>
-                    <td th:text="${item.getUrunAd()}"></td>
-                    <td th:text="${item.getUrunAktif() eq 1} ? 'Aktif' : 'Pasif'"></td>
-                    <td>
-                        <a th:href="@{/urun/show/{id}(id = ${item.getId()})}"><span class="icon-yesil"><i class="fa-solid fa-recycle"></i></span></a>
-                        <span>&nbsp;&nbsp;</span>
-                        <a th:href="@{/urun/delete/{id}(id = ${item.getId()})}"><span class="icon-red"><i class="fa-solid fa-xmark"></i></span></a>
-                    </td>
-                </tr>
-            </table>
+                    <div class="input-group mb-2">
+                        <span class="input-group-text but-deep-purple border-koseli-1px width150px">Fiyatı (*)</span>
+                        <input th:id="urunFiyat" th:name="urunFiyat" th:autocomplete="off" required type="number" step="0.5" min="1" max="500"
+                               th:value="${urun ne null} ? ${urun.getUrunFiyat()} : 1 " class="form-control border-koseli-1px"/>
+                        <input th:id="id" th:name="id" type="hidden" th:value="${urun ne null} ? ${urun.getId()} : '' "/>
+                    </div>
+
+                    <div class="input-group mb-2">
+                        <label class="input-group-text but-deep-purple border-koseli-1px width150px">Durum</label>
+                        <select th:name="aktif" th:id="aktif" class="form-control form-select border-koseli-1px">
+                            <th:block th:if="${urun eq null}">
+                                <option selected value="1">Aktif</option>
+                                <option value="0">Pasif</option>
+                            </th:block>
+                            <th:block th:if="${urun ne null}">
+                                <option th:if="${urun.getAktif() eq 0}" value="0" selected>Pasif</option>
+                                <option th:if="${urun.getAktif() eq 0}" value="1">Aktif</option>
+                                <option th:if="${urun.getAktif() eq 1}" value="1" selected>Aktif</option>
+                                <option th:if="${urun.getAktif() eq 1}" value="0">Pasif</option>
+                            </th:block>
+                        </select>
+                    </div>
+                    <div class="row" style="border:0px solid green;">
+                        <div class="mx-auto mt-2" style="border:0px solid red;">
+                            <a class="btn btn-sm btn-link but-purple text-decoration-none" role="button" id="urunYeni" th:href="@{/urun}">Yeni</a>
+                            <th:block th:if="${urun ne null}">
+                                <a class="btn btn-sm btn-link but-deep-purple text-decoration-none" role="button" id="urunIptal" th:href="@{/urun/cancel}">Temizle</a>
+                            </th:block>
+                            <button class="btn btn-sm but-indigo" type="submit" id="urunKaydet">Kaydet</button>
+                        </div>
+                    </div>
+                </form>
+
+                <table class="table table-striped border-top-2px p-0 m-0">
+                    <tr class="but-purple">
+                        <th class="text-white-50">ID</th>
+                        <th class="text-white-50">Adı</th>
+                        <th class="text-white-50">Fiyatı</th>
+                        <th class="text-white-50">Durum</th>
+                        <th class="text-white-50">Tarih</th>
+                        <th class="text-white-50">Aksiyon</th>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(urunlist)}">
+                        <td colspan="5">No Records found. Add some...!</td>
+                    </tr>
+                    <tr th:id="'tr_' + ${item.getId()}" th:each="item : ${urunlist}" th:class="${item.getAktif()==0} ? 'pasif' : ''">
+                        <td th:text="${item.getId()}"></td>
+                        <td th:text="${item.getUrunAd()}"></td>
+                        <td th:text="${textUtils.truncZeroFromPrice(item.getUrunFiyat()) + ' TL'}"></td>
+                        <td th:text="${item.getAktif() eq 1} ? 'Aktif' : 'Pasif'"></td>
+                        <td th:text="${item.getTarih() ne null } ? ${dateUtils.toTurkishDateTime(item.getTarih())} : ''"></td>
+                        <td>
+
+                            <div class="d-flex justify-content-around">
+                                <div class="m-0 p-0">
+                                    <form method="post" th:action="@{/urun/show}" class="m-0 p-0">
+                                        <button type="submit" class="btn btn-sm btn-link text-decoration-none m-0 p-0"><span class="icon-yesil"><i
+                                                class="fa-solid fa-sync"></i></span></button>
+                                        <input type="hidden" name="id" th:value="${item.getId()}">
+                                    </form>
+                                </div>
+                                <div class="m-0 p-0">
+                                    <th:block th:if="${item.getAktif()==0}">
+                                        <form method="post" th:action="@{/urun/delete/{id}(id = ${item.getId()})}" onsubmit="return silmeOnay();" class="m-0 p-0">
+                                            <button type="submit" class="btn btn-sm btn-link text-decoration-none m-0 p-0"><span class="icon-red"><i
+                                                    class="fa-solid fa-minus-circle"></i></span></button>
+                                        </form>
+                                    </th:block>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
             </div>
         </div>
     </div>
+
+
+    <footer class="py-5">
+
+        <div class="d-flex flex-column flex-sm-row justify-content-between py-4 my-4 border-top-1px">
+            <p class="foot_baslik">&copy; 2022 Kete Ekmek</p>
+            <ul class="list-unstyled d-flex">
+                <li class="ms-3"><a class="link-dark" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#twitter"/></svg></a></li>
+                <li class="ms-3"><a class="link-dark" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#instagram"/></svg></a></li>
+                <li class="ms-3"><a class="link-dark" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#facebook"/></svg></a></li>
+            </ul>
+        </div>
+    </footer>
 
 </div>
 

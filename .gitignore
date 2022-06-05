@@ -32,3 +32,6 @@ build/
 
 ### VS Code ###
 .vscode/
+.DS_Store
+firin.db
+kete_ekmek_log.txt

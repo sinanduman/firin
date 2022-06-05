@@ -1,31 +1,34 @@
-package com.mordeninaf.boot.firin.entity;
+package com.mordeninaf.boot.firin.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.stereotype.Component;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Component
-
-@Entity(name = "URUN")
+@Entity
 public class Urun {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
     private String urunAd;
-    private int urunAktif;
+    private double urunFiyat = 1;
+    private int aktif = 1;
+    private LocalDateTime tarih;
 
-    public Urun(String urunAd, int urunAktif) {
+    public Urun(String urunAd) {
         this.urunAd = urunAd;
-        this.urunAktif = urunAktif;
+    }
+
+    public Urun(String urunAd, LocalDateTime tarih) {
+        this.urunAd = urunAd;
+        this.tarih = tarih;
     }
 }

@@ -1,7 +1,10 @@
 package com.mordeninaf.boot.firin.service;
 
-import com.mordeninaf.boot.firin.entity.Urun;
+import com.mordeninaf.boot.firin.model.Urun;
 import com.mordeninaf.boot.firin.repository.UrunRepository;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +13,8 @@ import java.util.Optional;
 
 @Service
 public class UrunService {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(UrunService.class);
 
     @Autowired
     private UrunRepository urunRepository;
@@ -23,7 +28,17 @@ public class UrunService {
         return urunRepository.findAll();
     }
 
-    public void save(Urun urun) {
-        urunRepository.save(urun);
+    public Urun save(Urun urun) {
+        return urunRepository.save(urun);
+    }
+
+    public String remove(Urun urun) {
+        try {
+            urunRepository.delete(urun);
+            return "OK";
+        } catch (Exception e) {
+            LOGGER.info(ExceptionUtils.getStackTrace(e));
+            return "NOK";
+        }
     }
 }

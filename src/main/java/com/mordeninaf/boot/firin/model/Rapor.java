@@ -1,25 +1,28 @@
-package com.mordeninaf.boot.firin.entity;
+package com.mordeninaf.boot.firin.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "SIPARIS")
-public class Siparis {
+@Entity
+public class Rapor {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-    private Integer urunId;
-    private Integer cariId;
+    private String cariAd;
+    private String urunAd;
     private Integer adet;
-    private LocalDate date;
+    private Double tutar;
+    private String satisIade;
+    private String odemeTarihi;
+    private String kayitTarihi;
 }

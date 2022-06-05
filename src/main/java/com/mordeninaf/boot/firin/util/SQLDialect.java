@@ -40,6 +40,11 @@ public class SQLDialect extends Dialect {
         registerFunction("substring", new StandardSQLFunction("substr", StringType.INSTANCE));
     }
 
+    @Override
+    public boolean bindLimitParametersInReverseOrder() {
+        return true;
+    }
+
     public boolean supportsIdentityColumns() {
         return true;
     }

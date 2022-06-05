@@ -1,4 +1,4 @@
-package com.mordeninaf.boot.firin.entity;
+package com.mordeninaf.boot.firin.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,12 +8,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "CARI")
+@Entity
 public class Cari {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -22,12 +22,12 @@ public class Cari {
     private String cariTel;
     private String cariAdres;
     private String cariYetkili;
-    private int cariAktif;
+    private int aktif = 1;
+    private LocalDateTime tarih;
 
-    public Cari(String cariAd, String cariYetkili, String cariTel, int cariAktif) {
+    public Cari(String cariAd, String cariYetkili, String cariTel) {
         this.cariAd = cariAd;
         this.cariYetkili = cariYetkili;
         this.cariTel = cariTel;
-        this.cariAktif = cariAktif;
     }
 }
