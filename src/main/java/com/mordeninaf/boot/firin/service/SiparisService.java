@@ -57,6 +57,14 @@ public class SiparisService {
         }
     }
 
+    public List<Siparis> findAllByCariId(Integer cariId) {
+        return siparisRepository.findAllByCariId(cariId);
+    }
+
+    public List<Siparis> findAllByUrunId(Integer urunId) {
+        return siparisRepository.findAllByUrunId(urunId);
+    }
+
     public Siparis save(Siparis siparis) {
         return siparisRepository.save(siparis);
     }

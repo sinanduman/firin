@@ -67,14 +67,14 @@
                     <div class="input-group mb-2">
                         <span class="input-group-text but-deep-purple border-koseli-1px width150px">Cari (*)</span>
                         <select th:name="cariId" th:id="cariId" class="form-control form-select border-koseli-1px">
-                            <option th:each="cari : ${cariList}" th:value="${cari.getId()}" th:text="${cari.getCariAd() + ' - ' + cari.getCariYetkili() }" th:selected="${siparis ne null and cari.getId() == siparis.getCariId()}"></option>
+                            <option th:if="${cari.getAktif()==1}" th:each="cari : ${cariList}" th:value="${cari.getId()}" th:text="${cari.getCariAd() + ' - ' + cari.getCariYetkili() }" th:selected="${siparis ne null and cari.getId() == siparis.getCariId()}"></option>
                         </select>
                     </div>
 
                     <div class="input-group mb-2">
                         <span class="input-group-text but-deep-purple border-koseli-1px width150px">Ürün (*)</span>
                         <select th:name="urunId" th:id="urunId" class="form-control form-select border-koseli-1px">
-                            <option th:each="urun : ${urunList}" th:value="${urun.getId()}" th:text="${urun.getUrunAd() + ' - ' + textUtils.truncZeroFromPrice(urun.getUrunFiyat()) + ' TL'}" th:selected="${siparis ne null and urun.getId() == siparis.getUrunId()}"></option>
+                            <option th:if="${urun.getAktif()==1}" th:each="urun : ${urunList}" th:value="${urun.getId()}" th:text="${urun.getUrunAd() + ' - ' + textUtils.truncZeroFromPrice(urun.getUrunFiyat()) + ' TL'}" th:selected="${siparis ne null and urun.getId() == siparis.getUrunId()}"></option>
                         </select>
                     </div>
 

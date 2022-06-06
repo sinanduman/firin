@@ -1,7 +1,11 @@
 package com.mordeninaf.boot.firin.controller;
 
 import com.mordeninaf.boot.firin.model.Cari;
+import com.mordeninaf.boot.firin.model.Siparis;
+import com.mordeninaf.boot.firin.model.Tahsilat;
 import com.mordeninaf.boot.firin.service.CariService;
+import com.mordeninaf.boot.firin.service.SiparisService;
+import com.mordeninaf.boot.firin.service.TahsilatService;
 import com.mordeninaf.boot.firin.util.TextUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -23,6 +27,12 @@ public class CariController {
 
     @Autowired
     private CariService cariService;
+
+    @Autowired
+    private SiparisService siparisService;
+
+    @Autowired
+    private TahsilatService tahsilatService;
 
     @GetMapping("/cari")
     public String main(Model model) {
@@ -76,14 +86,20 @@ public class CariController {
             if (cari == null) {
                 result = "NOK";
             } else {
-                LOGGER.info("{} - CARİ kayıt silindi... {}", LocalDateTime.now(ZoneId.systemDefault()), cari);
-                cariService.remove(cari);
+                List<Siparis> cariSiparis = siparisService.findAllByCariId(cari.getId());
+                List<Tahsilat> tahsilatSiparis = tahsilatService.findAllByCariId(cari.getId());
+                if (cariSiparis.isEmpty() && tahsilatSiparis.isEmpty()) {
+                    cariService.remove(cari);
+                    LOGGER.info("{} - CARİ kayıt silindi... {}", LocalDateTime.now(ZoneId.systemDefault()), cari);
+                } else {
+                    result = "Sipariş ve Tahsilat kaydı bulunduğundan silinemedi!";
+                }
             }
         }
         if (result.equalsIgnoreCase("OK")) {
             redirAttrs.addFlashAttribute("success", "İşlem Başarılı.");
         } else {
-            redirAttrs.addFlashAttribute("error", "İşlem Başarısız.");
+            redirAttrs.addFlashAttribute("error", result);
         }
         return "redirect:/cari/";
     }

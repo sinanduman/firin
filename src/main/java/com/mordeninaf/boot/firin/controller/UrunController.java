@@ -1,6 +1,9 @@
 package com.mordeninaf.boot.firin.controller;
 
+import com.mordeninaf.boot.firin.model.Siparis;
+import com.mordeninaf.boot.firin.model.Tahsilat;
 import com.mordeninaf.boot.firin.model.Urun;
+import com.mordeninaf.boot.firin.service.SiparisService;
 import com.mordeninaf.boot.firin.service.UrunService;
 import com.mordeninaf.boot.firin.util.DateUtils;
 import com.mordeninaf.boot.firin.util.TextUtils;
@@ -24,6 +27,8 @@ public class UrunController {
 
     @Autowired
     private UrunService urunService;
+    @Autowired
+    private SiparisService siparisService;
 
     @GetMapping("/urun")
     public String main(Model model) {
@@ -78,14 +83,19 @@ public class UrunController {
             if (urun == null) {
                 result = "NOK";
             } else {
-                LOGGER.info("{} - ÜRÜN kaydı silindi... {}", LocalDateTime.now(ZoneId.systemDefault()), urun);
-                urunService.remove(urun);
+                List<Siparis> urunSiparis = siparisService.findAllByUrunId(urun.getId());
+                if (urunSiparis.isEmpty()) {
+                    urunService.remove(urun);
+                    LOGGER.info("{} - ÜRÜN kaydı silindi... {}", LocalDateTime.now(ZoneId.systemDefault()), urun);
+                } else {
+                    result = "Sipariş kaydı bulunduğundan silinemedi!";
+                }
             }
         }
         if (result.equalsIgnoreCase("OK")) {
             redirAttrs.addFlashAttribute("success", "İşlem Başarılı.");
         } else {
-            redirAttrs.addFlashAttribute("error", "İşlem Başarısız.");
+            redirAttrs.addFlashAttribute("error", result);
         }
         return "redirect:/urun/";
     }

@@ -51,6 +51,10 @@ public class TahsilatService {
         return tahsilatRepository.findAllByCariId(cariId, paging);
     }
 
+    public List<Tahsilat> findAllByCariId(Integer cariId) {
+        return tahsilatRepository.findAllByCariId(cariId);
+    }
+
     public Page<Tahsilat> findAllByTarih(String tahsilatTarihi, int pageNo, int pageSize, String sortBy) {
         Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).descending());
         return tahsilatRepository.findAllByTarihOdeme(tahsilatTarihi, paging);
