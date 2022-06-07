@@ -1,58 +1,19 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Kete Ekmek</title>
-    <link rel="icon" th:href="@{/icon/favicon.ico}" type="image/x-icon">
-    <link th:rel="stylesheet" th:href="@{/css/firin.css}" type="text/css"/>
-    <link th:rel="stylesheet" th:href="@{/css/bootstrap.min.css}" type="text/css"/>
-    <link th:rel="stylesheet" th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css}" type="text/css"/>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300&display=swap" rel="stylesheet">
-</head>
+<head th:replace="header :: head"></head>
 <body>
 
-<!-- Navigation -->
-<nav class="navbar navbar-expand-lg navbar-dark static-top navbar-custom-background">
-    <div class="container">
-        <div class="col-md-10 mx-auto mt-2">
-            <div class="collapse navbar-collapse" id="navbarResponsive">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="navbar-brand nav-link" href="/"><i class="fa-solid fa-house"></i></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/cari">Cari Hesap <i class="fa-solid fa-user-tie"></i></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/urun">Ürünler <i class="fa-solid fa-cookie-bite"></i></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/siparis">Sipariş <i class="fa-solid fa-receipt"></i></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/tahsilat">Tahsilat <i class="fa-solid fa-cash-register"></i></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/rapor">Rapor <i class="fa-solid fa-table"></i></a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</nav>
+<div th:replace="header :: nav ('sip')"></div>
 
 <div class="container">
-    <div class="row">
+    <div class="row" th:if="${success} ne null or ${error} ne null">
         <div class="alert alert-success" role="alert" th:text="${success}" th:if="${success}"></div>
         <div class="alert alert-danger" role="alert" th:text="${error}" th:if="${error}"></div>
     </div>
 
     <div class="row">
-        <div class="col-md-10 mx-auto mt-2">
-            <div class="row mt-auto"><span class="ust_baslik txt-deep-purple">Sipariş</span></div>
+        <div class="col-md-10 col-sm-10 mx-auto mt-2">
+            <div class="row mt-auto"><span class="ust_baslik">Sipariş</span></div>
             <div class="row mt-0 p-0 border-koseli-2px">
                 <form method="post" th:action="@{/siparis}" th:object="${siparisObj}" id="siparisForm" name="siparisForm"
                       class="col card p-2 m-2 borderless">
@@ -124,8 +85,8 @@
                     </div>
                 </form>
 
-                <table class="table table-striped border-top-2px p-0 m-0">
-                    <tr class="but-purple">
+                <table class="table table-responsive table-responsive-lg table-responsive-md table-responsive-sm table-striped border-top-2px p-0 m-0">
+                    <tr class="but-purple d-table-row">
                         <th class="text-white-50">ID</th>
                         <th class="text-white-50">Kime</th>
                         <th class="text-white-50">Ürün</th>
@@ -139,7 +100,7 @@
                     <tr th:if="${#lists.isEmpty(siparisList)}">
                         <td colspan="10">Henüz Kayıt Yok...</td>
                     </tr>
-                    <tr th:id="'tr_' + ${siparis.getId()}" th:each="siparis : ${siparisList}" th:class="${registered eq siparis.getId()} ? 'new_update' : ''">
+                    <tr th:id="'tr_' + ${siparis.getId()}" th:each="siparis : ${siparisList}" th:classappend="${registered eq siparis.getId()} ? 'new_update'">
                         <td th:text="${siparis.getId()}"></td>
                         <td th:text="${cariMap.get(siparis.getCariId()).getCariAd()} +' - ' + ${cariMap.get(siparis.getCariId()).getCariYetkili()}"></td>
                         <td th:text="${urunMap.get(siparis.getUrunId()).getUrunAd()}"></td>
@@ -179,7 +140,7 @@
 
     <div class="row" th:if="${!siparisList.isEmpty()}">
         <div class="m-0 p-0">
-            <div class="col-md-10 mx-auto mt-3">
+            <div class="col-md-10 col-sm-10 mx-auto mt-3">
                 <div class="d-flex m-0 p-0 justify-content-end">
                     <nav aria-label="..." class="m-0 p-0">
                     <ul class="pagination border-koseli-1px">
@@ -193,7 +154,7 @@
                         </li>
                         <li class="page-item" th:each="pageIndex : ${totalPages}">
                             <th:block th:if="${(pageIndex <= (pageNo + 2)) and (pageIndex >= (pageNo - 2)) }">
-                                <a th:class="${pageIndex.intValue() == pageNo} ? 'page-link border-0 but-deep-purple active' : 'page-link border-0 txt-deep-purple'" th:href="@{/siparis/(page = ${pageIndex.intValue()})}" th:text="${(pageIndex+1)}"></a>
+                                <a class="page-link border-0 but-deep-purple" th:classappend="${pageIndex.intValue() == pageNo} ? 'active'" th:href="@{/siparis/(page = ${pageIndex.intValue()})}" th:text="${(pageIndex+1)}"></a>
                             </th:block>
                             <th:block th:if="${!((pageIndex <= (pageNo + 2)) and (pageIndex >= (pageNo - 2))) and (pageIndex == 0 or pageIndex == totalPages.size() -1)}">
                                 <a class="page-link border-0 txt-deep-purple" th:text=".."></a>
@@ -217,17 +178,7 @@
 
 
 
-    <footer class="py-5">
-
-        <div class="d-flex flex-column flex-sm-row justify-content-between py-4 my-4 border-top-1px">
-            <p class="foot_baslik">&copy; 2022 Kete Ekmek</p>
-            <ul class="list-unstyled d-flex">
-                <li class="ms-3"><a class="link-dark" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#twitter"/></svg></a></li>
-                <li class="ms-3"><a class="link-dark" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#instagram"/></svg></a></li>
-                <li class="ms-3"><a class="link-dark" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#facebook"/></svg></a></li>
-            </ul>
-        </div>
-    </footer>
+    <div th:replace="footer :: foot"></div>
 
 </div>
 

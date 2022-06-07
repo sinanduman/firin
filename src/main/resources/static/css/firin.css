@@ -1,5 +1,8 @@
+:root {
+    --siyah: #000064;
+}
 body {
-    background-color: #fffffa !important;
+    background-color: #ffffff !important;
 }
 
 .icon-red {
@@ -31,58 +34,55 @@ body {
     font-size: 2em;
     font-style: normal;
     font-weight: 700;
-    color: #000020;
+    color: navy !important;
 }
 
 .foot_baslik {
     font-family: 'Comfortaa', cursive;
     font-size: 1em;
     font-weight: bolder;
-    color: #000020;
+    color: var(--siyah);
 }
 
-
 .border-koseli-1px {
-    border: 1px solid #000048 !important;
+    border: 1px solid var(--siyah) !important;
 }
 
 .border-koseli-2px-lef {
-    border-left: 2px solid #000048 !important;
+    border-left: 2px solid var(--siyah) !important;
 }
 
 .border-koseli-2px {
-    border: 2px solid #000048 !important;
+    border: 2px solid #9C27B0 !important;
     border-top-left-radius: 1em;
 }
 
 .border-koseli-2px-rev {
-    border: 2px solid #000048 !important;
+    border: 2px solid var(--siyah) !important;
     border-bottom-left-radius: 1em;
 }
 
 .border-koseli-1px-rev {
-    border: 1px solid #000048 !important;
+    border: 1px solid var(--siyah) !important;
     border-bottom-left-radius: 1em;
 }
 
 .border-koseli-1px-l0 {
-    border-top: 1px solid #000048 !important;
-    border-right: 1px solid #000048 !important;
-    border-bottom: 1px solid #000048 !important;
+    border-top: 1px solid var(--siyah) !important;
+    border-right: 1px solid var(--siyah) !important;
+    border-bottom: 1px solid var(--siyah) !important;
     border-top-right-radius: 1em;
     border-bottom-right-radius: 1em;
 }
 
-
-
 .border-top-1px {
     border: 0 !important;
-    border-top: 1px solid #000048 !important;
+    border-top: 1px solid var(--siyah) !important;
 }
 
 .border-top-2px {
     border: 0 !important;
-    border-top: 2px solid #000048 !important;
+    border-top: 2px solid var(--siyah) !important;
 }
 
 .but-purple {
@@ -108,8 +108,14 @@ body {
 }
 
 .logo-ekmek {
-    font-size: 2rem;
+    font-size: 2.5rem;
     color: darkorange;
+}
+
+.logo-yazi {
+    font-family: 'Comfortaa', cursive;
+    font-size: 2.5rem;
+    color: #673AB7 !important;
 }
 
 .but-indigo {
@@ -122,7 +128,7 @@ body {
 }
 
 .navbar-custom-background {
-    background-color: #000048;
+    background-color: var(--siyah);
 }
 
 tr {
@@ -148,6 +154,6 @@ a.aktif {
 }
 
 .new_update {
-    color: black;
+    color: var(--siyah);
     background-color: #FFF9C4;
 }

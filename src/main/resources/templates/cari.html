@@ -1,58 +1,19 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Kete Ekmek</title>
-    <link rel="icon" th:href="@{/icon/favicon.ico}" type="image/x-icon">
-    <link th:rel="stylesheet" th:href="@{/css/firin.css}" type="text/css"/>
-    <link th:rel="stylesheet" th:href="@{/css/bootstrap.min.css}" type="text/css"/>
-    <link th:rel="stylesheet" th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css}" type="text/css"/>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300&display=swap" rel="stylesheet">
-</head>
+<head th:replace="header :: head"></head>
 <body>
 
-<!-- Navigation -->
-<nav class="navbar navbar-expand-lg navbar-dark static-top navbar-custom-background">
-    <div class="container">
-        <div class="col-md-10 mx-auto mt-2">
-            <div class="collapse navbar-collapse" id="navbarResponsive">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="navbar-brand nav-link" href="/"><i class="fa-solid fa-house"></i></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/cari">Cari Hesap <i class="fa-solid fa-user-tie"></i></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/urun">Ürünler <i class="fa-solid fa-cookie-bite"></i></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/siparis">Sipariş <i class="fa-solid fa-receipt"></i></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/tahsilat">Tahsilat <i class="fa-solid fa-cash-register"></i></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/rapor">Rapor <i class="fa-solid fa-table"></i></a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</nav>
+<div th:replace="header :: nav ('cari')"></div>
 
 <div class="container">
-    <div class="row">
+    <div class="row" th:if="${success} ne null or ${error} ne null">
         <div class="alert alert-success" role="alert" th:text="${success}" th:if="${success}"></div>
         <div class="alert alert-danger" role="alert" th:text="${error}" th:if="${error}"></div>
     </div>
 
     <div class="row">
-        <div class="col-md-10 mx-auto mt-2">
-            <div class="row mt-auto"><span class="ust_baslik txt-deep-purple">Cari Hesap</span></div>
+        <div class="col-md-10 col-sm-10 mx-auto mt-2">
+            <div class="row mt-auto"><span class="ust_baslik">Cari Hesap</span></div>
             <div class="row mt-0 p-0 border-koseli-2px">
                 <form method="post" th:action="@{/cari}" th:object="${cariObj}" id="cariForm" name="cariForm"
                       class="col card p-2 m-2 borderless">
@@ -108,8 +69,8 @@
                     </div>
                 </form>
 
-                <table class="table table-striped border-top-2px p-0 m-0">
-                    <tr class="but-purple">
+                <table class="table table-responsive table-responsive-lg table-responsive-md table-responsive-sm table-striped border-top-2px p-0 m-0">
+                    <tr class="but-purple d-table-row">
                         <th class="text-white-50">ID</th>
                         <th class="text-white-50">Adı</th>
                         <th class="text-white-50">Yetkili Adı</th>
@@ -121,7 +82,7 @@
                     <tr th:if="${#lists.isEmpty(carilist)}">
                         <td colspan="5">No Records found. Add some...!</td>
                     </tr>
-                    <tr th:id="'tr_' + ${item.getId()}" th:each="item : ${carilist}" th:class="${item.getAktif()==0} ? 'pasif' : ''">
+                    <tr th:id="'tr_' + ${item.getId()}" th:each="item : ${carilist}" th:classappend="${item.getAktif()==0} ? 'pasif'">
                         <td th:text="${item.getId()}"></td>
                         <td th:text="${item.getCariAd()}"></td>
                         <td th:text="${item.getCariYetkili()}"></td>
@@ -154,17 +115,7 @@
     </div>
 
 
-    <footer class="py-5">
-
-        <div class="d-flex flex-column flex-sm-row justify-content-between py-4 my-4 border-top-1px">
-            <p class="foot_baslik">&copy; 2022 Kete Ekmek</p>
-            <ul class="list-unstyled d-flex">
-                <li class="ms-3"><a class="link-dark" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#twitter"/></svg></a></li>
-                <li class="ms-3"><a class="link-dark" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#instagram"/></svg></a></li>
-                <li class="ms-3"><a class="link-dark" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#facebook"/></svg></a></li>
-            </ul>
-        </div>
-    </footer>
+    <div th:insert="footer :: foot"></div>
 
 </div>
 
