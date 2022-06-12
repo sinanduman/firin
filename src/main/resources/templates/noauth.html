@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="header :: head"></head>
+<body>
+
+<div th:replace="header :: nav ('index')"></div>
+
+<div class="container ms-2 me-2 p-0">
+    <div th:if="${success} ne null or ${error} ne null">
+        <div class="alert alert-primary" role="alert" th:text="${success}" th:if="${success}"></div>
+        <div class="alert alert-danger" role="alert" th:text="${error}" th:if="${error}"></div>
+    </div>
+</div>
+
+<div class="container m-2 p-0">
+    <div class="d-flex justify-content-start align-items-center">
+        <div class="m-2">
+            <div class="logo-yazi">ERİŞİM HATASI</div>
+        </div>
+        <!--
+        <div class="m-2">
+            <div class="logo-ekmek"><i class="fa-solid fa-bread-slice"></i></div>
+        </div>-->
+    </div>
+</div>
+
+<script th:src="@{/js/firin.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+</body>
+</html>

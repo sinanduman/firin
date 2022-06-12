@@ -1,7 +1,6 @@
 package com.mordeninaf.boot.firin.controller;
 
 import com.mordeninaf.boot.firin.model.Siparis;
-import com.mordeninaf.boot.firin.model.Tahsilat;
 import com.mordeninaf.boot.firin.model.Urun;
 import com.mordeninaf.boot.firin.service.SiparisService;
 import com.mordeninaf.boot.firin.service.UrunService;
