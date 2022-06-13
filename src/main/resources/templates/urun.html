@@ -18,17 +18,24 @@
                 <form method="post" th:action="@{/urun}" th:object="${urunObj}" id="urunForm" name="urunForm"
                       class="col card p-2 m-2 borderless">
 
+                    <th:block th:if="${urun ne null}">
+                        <div class="input-group mb-2">
+                            <span class="input-group-text but-deep-purple border-koseli-1px width150px">Ürün Id</span>
+                            <input type="text" th:value="${urun.getId()}" class="form-control border-koseli-1px disabled" disabled readonly/>
+                        </div>
+                    </th:block>
+
                     <div class="input-group mb-2">
-                        <span class="input-group-text but-deep-purple border-koseli-1px width150px">Adı (*)</span>
+                        <span class="input-group-text but-deep-purple border-koseli-1px width150px">Adı<sup>*</sup></span>
                         <input th:id="urunAd" th:name="urunAd" th:autocomplete="off" required type="text"
-                               th:value="${urun ne null} ? ${urun.getUrunAd()} : '' " class="form-control border-koseli-1px"/>
+                               th:value="${urun ne null} ? ${urun.getUrunAd()}" class="form-control border-koseli-1px"/>
                     </div>
 
                     <div class="input-group mb-2">
-                        <span class="input-group-text but-deep-purple border-koseli-1px width150px">Fiyatı (*)</span>
+                        <span class="input-group-text but-deep-purple border-koseli-1px width150px">Fiyatı<sup>*</sup><span class="pe-2"></span><i class="fa-solid fa-turkish-lira-sign"></i></span>
                         <input th:id="urunFiyat" th:name="urunFiyat" th:autocomplete="off" required type="number" step="0.5" min="1" max="500"
                                th:value="${urun ne null} ? ${urun.getUrunFiyat()} : 1 " class="form-control border-koseli-1px"/>
-                        <input th:id="id" th:name="id" type="hidden" th:value="${urun ne null} ? ${urun.getId()} : '' "/>
+                        <input th:id="id" th:name="id" type="hidden" th:value="${urun ne null} ? ${urun.getId()}"/>
                     </div>
 
                     <div class="input-group mb-2">
@@ -48,11 +55,11 @@
                     </div>
                     <div class="row" style="border:0px solid green;">
                         <div class="mx-auto mt-2" style="border:0px solid red;">
-                            <a class="btn btn-sm btn-link but-purple text-decoration-none" role="button" id="urunYeni" th:href="@{/urun}">Yeni</a>
+                            <a class="btn btn-sm btn-link but-purple text-decoration-none" role="button" id="urunYeni" th:href="@{/urun}">Yeni<span class="pe-2"></span><i class="fa-solid fa-file"></i></a>
                             <th:block th:if="${urun ne null}">
-                                <a class="btn btn-sm btn-link but-deep-purple text-decoration-none" role="button" id="urunIptal" th:href="@{/urun/cancel}">Temizle</a>
+                                <a class="btn btn-sm btn-link but-deep-purple text-decoration-none" role="button" id="urunIptal" th:href="@{/urun/cancel}">Temizle<span class="pe-2"></span><i class="fa-solid fa-eraser"></i></a>
                             </th:block>
-                            <button class="btn btn-sm but-indigo" type="submit" id="urunKaydet">Kaydet</button>
+                            <button class="btn btn-sm but-indigo" type="submit" id="urunKaydet">Kaydet<span class="pe-2"></span><i class="fa-solid fa-floppy-disk"></i></button>
                         </div>
                     </div>
                 </form>
@@ -71,10 +78,10 @@
                     </tr>
                     <tr th:id="'tr_' + ${item.getId()}" th:each="item : ${urunlist}" th:classappend="${item.getAktif()==0} ? 'pasif'">
                         <td th:text="${item.getId()}"></td>
-                        <td th:text="${item.getUrunAd()}"></td>
-                        <td th:text="${textUtils.truncZeroFromPrice(item.getUrunFiyat()) + ' TL'}"></td>
+                        <td class="txt-deep-purple" th:text="${item.getUrunAd()}"></td>
+                        <td class="txt-redo txt-mono" th:text="${textUtils.convertTurkishLira(item.getUrunFiyat())}"></td>
                         <td th:text="${item.getAktif() eq 1} ? 'Aktif' : 'Pasif'"></td>
-                        <td th:text="${item.getTarih() ne null } ? ${dateUtils.toTurkishDateTime(item.getTarih())} : ''"></td>
+                        <td th:text="${item.getTarih() ne null } ? ${dateUtils.toTurkishDateTime(item.getTarih())}"></td>
                         <td>
 
                             <div class="d-flex justify-content-around">

@@ -4,45 +4,40 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Kete Ekmek</title>
-    <link rel="icon" th:href="@{/icon/favicon.ico}" type="image/x-icon">
+    <link rel="icon" th:href="@{/icon/wheat.ico}" type="image/x-icon">
     <link th:rel="stylesheet" th:href="@{/css/firin.css}" type="text/css"/>
     <link th:rel="stylesheet" th:href="@{/css/bootstrap.min.css}" type="text/css"/>
     <link th:rel="stylesheet" th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css}" type="text/css"/>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300&display=swap" rel="stylesheet">
 </head>
 
 <!-- Navigation -->
-<nav th:fragment="nav (pageName)" class="navbar navbar-expand-lg navbar-expand-md navbar-expand-sm navbar-dark static-top navbar-custom-background">
+<nav th:fragment="nav (pageName)" class="navbar navbar-expand-sm navbar-dark static-top navbar-custom-background">
     <div class="container-fluid">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <!--<div class="col-md-10 mx-auto mt-2">-->
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="navbar-brand nav-link" href="/"><i class="fa-solid fa-house"></i></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:classappend="${pageName eq 'cari'} ? 'active'" href="/cari">Cari Hesap <i class="fa-solid fa-user-tie"></i></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:classappend="${pageName eq 'urun'} ? 'active'" href="/urun">Ürünler <i class="fa-solid fa-cookie-bite"></i></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:classappend="${pageName eq 'sip'} ? 'active'" href="/siparis">Sipariş <i class="fa-solid fa-receipt"></i></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:classappend="${pageName eq 'tah'} ? 'active'" href="/tahsilat">Tahsilat <i class="fa-solid fa-cash-register"></i></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:classappend="${pageName eq 'rapor'} ? 'active'" href="/rapor">Rapor <i class="fa-solid fa-table"></i></a>
-                    </li>
-                </ul>
-            </div>
-        <!--</div>-->
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="navbar-brand nav-link" href="/"><i class="fa-solid fa-house"></i></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${pageName eq 'cari'} ? 'active'" href="/cari">Cari Hesap <i class="fa-solid fa-user-tie"></i></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${pageName eq 'urun'} ? 'active'" href="/urun">Ürünler <i class="fa-solid fa-cookie-bite"></i></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${pageName eq 'sip'} ? 'active'" href="/siparis">Sipariş <i class="fa-solid fa-receipt"></i></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${pageName eq 'tah'} ? 'active'" href="/tahsilat">Tahsilat <i class="fa-solid fa-cash-register"></i></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${pageName eq 'rapor'} ? 'active'" href="/rapor">Rapor <i class="fa-solid fa-table"></i></a>
+                </li>
+            </ul>
+        </div>
     </div>
 </nav>
 

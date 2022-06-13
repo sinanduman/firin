@@ -1,6 +1,10 @@
 package com.mordeninaf.boot.firin.util;
 
+import java.text.NumberFormat;
+import java.util.Locale;
+
 public class TextUtils {
+    private static final String TURKISH_CURRENCY_SYMBOL = "₺";
 
     public static String truncZeroFromPrice(Double price) {
         if (price == null)
@@ -20,5 +24,14 @@ public class TextUtils {
             return temp.substring(0, Parameters.TRUNC_ADRES) + "..";
         }
         return temp;
+    }
+
+    public static String convertTurkishLira(Number num) {
+        if (num == null)
+            return "";
+        NumberFormat numberFormat = NumberFormat.getInstance(new Locale("tr_TR"));
+        numberFormat.setMaximumFractionDigits(1);
+        String tmpResult = String.format("%s %s",TURKISH_CURRENCY_SYMBOL, numberFormat.format(num));
+        return String.format("%7s", tmpResult).replaceAll(" ", "\u00A0");
     }
 }

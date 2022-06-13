@@ -1,7 +1,6 @@
 package com.mordeninaf.boot.firin.service;
 
 import com.mordeninaf.boot.firin.model.Siparis;
-import com.mordeninaf.boot.firin.model.Tahsilat;
 import com.mordeninaf.boot.firin.repository.SiparisRepository;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -14,7 +13,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 

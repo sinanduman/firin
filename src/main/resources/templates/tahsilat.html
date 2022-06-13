@@ -26,17 +26,17 @@
                     </th:block>
 
                     <div class="input-group mb-2">
-                        <span class="input-group-text but-deep-purple border-koseli-1px width150px">Cari (*)</span>
+                        <span class="input-group-text but-deep-purple border-koseli-1px width150px">Cari<span class="pe-2"></span><i class="fa-solid fa-user-tie"></i></span>
                         <select th:name="cariId" th:id="cariId" class="form-control form-select border-koseli-1px">
                             <option th:each="cari : ${cariList}"
                                     th:value="${cari.getId()}"
-                                    th:text="${cari.getCariAd() + ' - ' + cari.getCariYetkili() + ' - ANLIK BORÇ [' + textUtils.truncZeroFromPrice(cariOnayliSiparisMap.get(cari.getId())) + ' TL]' }"
+                                    th:text="${cariOnayliSiparisMap.get(cari.getId()) ne null ? cari.getCariAd() + ' - ' + cari.getCariYetkili() + ' - ANLIK BORÇ [' + textUtils.convertTurkishLira(cariOnayliSiparisMap.get(cari.getId())) + ']' : cari.getCariAd() + ' - ' + cari.getCariYetkili()}"
                                     th:selected="${tahsilat ne null and cari.getId() == tahsilat.getCariId()}"></option>
                         </select>
                     </div>
 
                     <div class="input-group mb-2">
-                        <span class="input-group-text but-deep-purple border-koseli-1px width150px">Tutar (*)</span>
+                        <span class="input-group-text but-deep-purple border-koseli-1px width150px">Tutar<sup>*</sup><span class="pe-2"></span><i class="fa-solid fa-turkish-lira-sign"></i></span>
                         <input th:id="tutar" th:name="tutar" th:autocomplete="off" required
                                type="number" min="1" max="10000" step="1" th:value="${tahsilat ne null} ? ${tahsilat.getTutar()} : 1 "
                                class="form-control border-koseli-1px"/>
@@ -48,17 +48,17 @@
                             <input type="date" th:value="${tahsilat ne null} ? ${tahsilat.getTarihOdeme()} : ${dateUtils.toIsoDateFromNow()}" class="form-control border-0" required th:name="tarihOdeme" th:id="tarihOdeme">
                         </div>
 
-                        <input th:id="id" th:name="id" type="hidden" th:value="${tahsilat ne null} ? ${tahsilat.getId()} : '' "/>
+                        <input th:id="id" th:name="id" type="hidden" th:value="${tahsilat ne null} ? ${tahsilat.getId()}"/>
                         <input th:id="page" th:name="page" type="hidden" th:value="${tahsilat ne null} ? ${pageNo} : 0"/>
                     </div>
 
                     <div class="row border-0">
                         <div class="mx-auto mt-2 border-0">
-                            <a class="btn btn-sm btn-link but-purple text-decoration-none" role="button" id="tahsilatYeni" th:href="@{/tahsilat}">Yeni</a>
+                            <a class="btn btn-sm btn-link but-purple text-decoration-none" role="button" id="tahsilatYeni" th:href="@{/tahsilat}">Yeni<span class="pe-2"></span><i class="fa-solid fa-file"></i></a>
                             <th:block th:if="${tahsilat ne null}">
-                                <a class="btn btn-sm btn-link but-deep-purple text-decoration-none" role="button" id="tahsilatIptal" th:href="@{/tahsilat/cancel}">Temizle</a>
+                                <a class="btn btn-sm btn-link but-deep-purple text-decoration-none" role="button" id="tahsilatIptal" th:href="@{/tahsilat/cancel}">Temizle<span class="pe-2"></span><i class="fa-solid fa-eraser"></i></a>
                             </th:block>
-                            <button class="btn btn-sm but-indigo" type="submit" id="tahsilatKaydet">Kaydet</button>
+                            <button class="btn btn-sm but-indigo" type="submit" id="tahsilatKaydet">Kaydet<span class="pe-2"></span><i class="fa-solid fa-floppy-disk"></i></button>
                         </div>
                     </div>
                 </form>
@@ -77,8 +77,8 @@
                     </tr>
                     <tr th:id="'tr_' + ${tahsilat.getId()}" th:each="tahsilat : ${tahsilatList}" th:classappend="${registered eq tahsilat.getId()} ? 'new_update'">
                         <td th:text="${tahsilat.getId()}"></td>
-                        <td th:text="${cariMap.get(tahsilat.getCariId()).getCariAd()} +' - ' + ${cariMap.get(tahsilat.getCariId()).getCariYetkili()}"></td>
-                        <td th:text="${tahsilat.getTutar()} + ' TL'"></td>
+                        <td class="txt-deep-purple" th:text="${cariMap.get(tahsilat.getCariId()).getCariAd()} +' - ' + ${cariMap.get(tahsilat.getCariId()).getCariYetkili()}"></td>
+                        <td class="txt-redo txt-mono" th:text="${textUtils.convertTurkishLira(tahsilat.getTutar())}"></td>
                         <td th:text="${dateUtils.toTurkishDateFromIso(tahsilat.getTarihOdeme())}"></td>
                         <td th:text="${dateUtils.toTurkishDateTime(tahsilat.getTarih())}"></td>
                         <td>
@@ -118,7 +118,7 @@
                         </li>
                         <li class="page-item" th:each="pageIndex : ${totalPages}">
                             <th:block th:if="${(pageIndex <= (pageNo + 2)) and (pageIndex >= (pageNo - 2)) }">
-                                <a class="page-link border-0 but-deep-purple" th:classappend="${pageIndex.intValue() == pageNo} ? 'active'" th:href="@{/tahsilat/(page = ${pageIndex.intValue()})}" th:text="${(pageIndex+1)}"></a>
+                                <a class="page-link border-0" th:classappend="${pageIndex.intValue() == pageNo} ? 'but-deep-purple active' : 'txt-deep-purple'" th:href="@{/tahsilat/(page = ${pageIndex.intValue()})}" th:text="${(pageIndex+1)}"></a>
                             </th:block>
                             <th:block th:if="${!((pageIndex <= (pageNo + 2)) and (pageIndex >= (pageNo - 2))) and (pageIndex == 0 or pageIndex == totalPages.size() -1)}">
                                 <a class="page-link border-0 txt-deep-purple" th:text=".."></a>

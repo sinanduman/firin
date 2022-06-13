@@ -18,29 +18,36 @@
                 <form method="post" th:action="@{/cari}" th:object="${cariObj}" id="cariForm" name="cariForm"
                       class="col card p-2 m-2 borderless">
 
+                    <th:block th:if="${cari ne null}">
+                        <div class="input-group mb-2">
+                            <span class="input-group-text but-deep-purple border-koseli-1px width150px">Cari Id</span>
+                            <input type="text" th:value="${cari.getId()}" class="form-control border-koseli-1px disabled" disabled readonly/>
+                        </div>
+                    </th:block>
+
                     <div class="input-group mb-2">
-                        <span class="input-group-text but-deep-purple border-koseli-1px width150px">Adı (*)</span>
+                        <span class="input-group-text but-deep-purple border-koseli-1px width150px">Adı<sup>*</sup></span>
                         <input th:id="cariAd" th:name="cariAd" th:autocomplete="off" required type="text"
-                               th:value="${cari ne null} ? ${cari.getCariAd()} : '' " class="form-control border-koseli-1px"/>
+                               th:value="${cari ne null} ? ${cari.getCariAd()}" class="form-control border-koseli-1px"/>
                     </div>
 
                     <div class="input-group mb-2">
-                        <span class="input-group-text but-deep-purple border-koseli-1px width150px">Yetkili Adı (*)</span>
+                        <span class="input-group-text but-deep-purple border-koseli-1px width150px">Yetkili Adı<sup>*</sup></span>
                         <input th:id="cariYetkili" th:name="cariYetkili" th:autocomplete="off" required
-                               type="text" th:value="${cari ne null} ? ${cari.getCariYetkili()} : '' "
+                               type="text" th:value="${cari ne null} ? ${cari.getCariYetkili()}"
                                class="form-control border-koseli-1px"/>
                     </div>
 
                     <div class="input-group mb-2">
-                        <span class="input-group-text but-deep-purple border-koseli-1px width150px">Telefonu (*)</span>
+                        <span class="input-group-text but-deep-purple border-koseli-1px width150px">Telefonu<sup>*</sup><span class="pe-2"></span><i class="fa-solid fa-mobile-retro"></i></span>
                         <input th:id="cariTel" th:name="cariTel" th:autocomplete="off" required type="tel"
-                               th:value="${cari ne null} ? ${cari.getCariTel()} : '' " class="form-control border-koseli-1px"/>
+                               th:value="${cari ne null} ? ${cari.getCariTel()}" class="form-control border-koseli-1px"/>
                     </div>
 
                     <div class="input-group mb-2">
-                        <span class="input-group-text but-deep-purple border-koseli-1px width150px">Adresi</span>
-                        <textarea class="form-control border-koseli-1px" th:id="cariAdres" th:name="cariAdres" th:value="${cari ne null} ? ${cari.getCariAdres()} : '' " th:text="${cari ne null} ? ${cari.getCariAdres()} : '' "></textarea>
-                        <input th:id="id" th:name="id" type="hidden" th:value="${cari ne null} ? ${cari.getId()} : '' "/>
+                        <span class="input-group-text but-deep-purple border-koseli-1px width150px">Adresi<span class="pe-2"></span><i class="fa-solid fa-map"></i></span>
+                        <textarea class="form-control border-koseli-1px" th:id="cariAdres" th:name="cariAdres" th:value="${cari ne null} ? ${cari.getCariAdres()}" th:text="${cari ne null} ? ${cari.getCariAdres()} "></textarea>
+                        <input th:id="id" th:name="id" type="hidden" th:value="${cari ne null} ? ${cari.getId()} "/>
                     </div>
 
                     <div class="input-group mb-2">
@@ -60,11 +67,11 @@
                     </div>
                     <div class="row" style="border:0px solid green;">
                         <div class="mx-auto mt-2" style="border:0px solid red;">
-                            <a class="btn btn-sm btn-link but-purple text-decoration-none" role="button" id="cariYeni" th:href="@{/cari}">Yeni</a>
+                            <a class="btn btn-sm btn-link but-purple text-decoration-none" role="button" id="cariYeni" th:href="@{/cari}">Yeni<span class="pe-2"></span><i class="fa-solid fa-file"></i></a>
                             <th:block th:if="${cari ne null}">
-                                <a class="btn btn-sm btn-link but-deep-purple text-decoration-none" role="button" id="cariIptal" th:href="@{/cari/cancel}">İptal</a>
+                                <a class="btn btn-sm btn-link but-deep-purple text-decoration-none" role="button" id="cariIptal" th:href="@{/cari/cancel}">Temizle<span class="pe-2"></span><i class="fa-solid fa-eraser"></i></a>
                             </th:block>
-                            <button class="btn btn-sm but-indigo" type="submit" id="cariKaydet">Kaydet</button>
+                            <button class="btn btn-sm but-indigo" type="submit" id="cariKaydet">Kaydet<span class="pe-2"></span><i class="fa-solid fa-floppy-disk"></i></button>
                         </div>
                     </div>
                 </form>
@@ -84,9 +91,9 @@
                     </tr>
                     <tr th:id="'tr_' + ${item.getId()}" th:each="item : ${carilist}" th:classappend="${item.getAktif()==0} ? 'pasif'">
                         <td th:text="${item.getId()}"></td>
-                        <td th:text="${item.getCariAd()}"></td>
-                        <td th:text="${item.getCariYetkili()}"></td>
-                        <td th:text="${item.getCariTel()}"></td>
+                        <td class="txt-deep-purple" th:text="${item.getCariAd()}"></td>
+                        <td class="txt-purple" th:text="${item.getCariYetkili()}"></td>
+                        <td class="txt-redo" th:text="${item.getCariTel()}"></td>
                         <td th:alt-title="${item.getCariAdres()}" th:text="${textUtils.truncAdres(item.getCariAdres())}"></td>
                         <td th:text="${item.getAktif() eq 1} ? 'Aktif' : 'Pasif'"></td>
                         <td>
