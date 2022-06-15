@@ -50,7 +50,7 @@ public class UrunController {
         return "urun";
     }
 
-    @PostMapping(value = "/urun/show")
+    @RequestMapping(value = "/urun/show", method = {RequestMethod.GET, RequestMethod.POST})
     public String show(Model model,
                        @RequestParam(name = "id") Integer id,
                        @RequestParam(name = "cariId") Integer cariId) {

@@ -44,7 +44,7 @@ public class CariController {
         return "cari";
     }
 
-    @PostMapping(value = "/cari/show")
+    @RequestMapping(value = "/cari/show", method = {RequestMethod.GET, RequestMethod.POST})
     public String show(Model model,
                        @RequestParam(name = "id") Integer id) {
         Cari cari = cariService.findById(id);

@@ -33,6 +33,6 @@ build/
 ### VS Code ###
 .vscode/
 .DS_Store
-firin.db
+*firin.db
 kete_ekmek_log.txt
 kete_ekmek_log.txt.*.gz

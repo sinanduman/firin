@@ -86,8 +86,8 @@
                         <td th:text="${item.getTarih() ne null } ? ${dateUtils.toTurkishDateTime(item.getTarih())}"></td>
                         <td>
 
-                            <div class="d-flex justify-content-around">
-                                <div class="m-0 p-0">
+                            <div class="d-flex justify-content-start">
+                                <div class="m-0 p-0 me-3">
                                     <form method="post" th:action="@{/urun/show}" class="m-0 p-0">
                                         <button type="submit" class="btn btn-sm btn-link text-decoration-none m-0 p-0"><span class="icon-yesil"><i
                                                 class="fa-solid fa-sync"></i></span></button>
@@ -118,15 +118,6 @@
 
 <script th:src="@{/js/firin.js}"></script>
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
-
-
-<!--
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/jq-3.6.0/dt-1.12.1/datatables.min.css"/>
-<script type="text/javascript" src="https://cdn.datatables.net/v/bs5/jq-3.6.0/dt-1.12.1/datatables.min.js"></script>
--->
-
-<script>
-</script>
 
 </body>
 </html>

@@ -109,8 +109,8 @@
                     </tr>
                     <tr th:id="'tr_' + ${siparis.getId()}" th:each="siparis : ${siparisList}" th:classappend="${registered eq siparis.getId()} ? 'new_update'">
                         <td th:text="${siparis.getId()}"></td>
-                        <td class="txt-deep-purple" th:text="${cariMap.get(siparis.getCariId()).getCariAd()} +' - ' + ${cariMap.get(siparis.getCariId()).getCariYetkili()}"></td>
-                        <td class="txt-purple" th:text="${urunMap.get(siparis.getUrunId()).getUrunAd()}"></td>
+                        <td><a class="txt-deep-purple text-decoration-none" th:text="${cariMap.get(siparis.getCariId()).getCariAd()} +' - ' + ${cariMap.get(siparis.getCariId()).getCariYetkili()}" th:href="@{/cari/show(id = ${siparis.getCariId()})}"></a></td>
+                        <td><a class="txt-purple text-decoration-none" th:text="${urunMap.get(siparis.getUrunId()).getUrunAd()} + ' ₺' + ${textUtils.truncZeroFromPrice(siparis.getTutar() / siparis.getAdet())}" th:href="@{/urun/show(id = ${siparis.getUrunId()}, cariId = ${siparis.getCariId()})}"></a></td>
                         <td class="txt-redo" th:text="${siparis.getAdet()}"></td>
                         <td class="txt-redo txt-mono" th:text="${textUtils.convertTurkishLira(siparis.getTutar())}"></td>
                         <td th:text="${dateUtils.toTurkishDateFromIso(siparis.getTarihSiparis()) + ' - ' + dateUtils.toTurkishDateTime(siparis.getTarih())}"></td>

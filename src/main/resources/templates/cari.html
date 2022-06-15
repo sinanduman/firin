@@ -96,8 +96,8 @@
                         <td th:alt-title="${item.getCariAdres()}" th:text="${textUtils.truncAdres(item.getCariAdres())}"></td>
                         <td th:text="${item.getAktif() eq 1} ? 'Aktif' : 'Pasif'"></td>
                         <td>
-                            <div class="d-flex justify-content-around">
-                                <div class="m-0 p-0">
+                            <div class="d-flex justify-content-start">
+                                <div class="m-0 p-0 me-3">
                                     <form method="post" th:action="@{/cari/show}" class="m-0 p-0">
                                         <button type="submit" class="btn btn-sm btn-link text-decoration-none m-0 p-0"><span class="icon-yesil"><i
                                                 class="fa-solid fa-sync"></i></span></button>
@@ -126,7 +126,6 @@
 </div>
 
 <script th:src="@{/js/firin.js}"></script>
-<script th:src="@{/js/jquery-3.6.0.min.js}"></script>
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 
 <script>
