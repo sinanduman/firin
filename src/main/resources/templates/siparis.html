@@ -117,8 +117,8 @@
                         <td th:text="${siparis.getOnay() eq 1} ? 'EVET' : 'HAYIR'"></td>
                         <td th:text="${siparis.getSatisIade() eq 1} ? 'SATIŞ' : 'İADE'" th:class="${siparis.getSatisIade() eq 1} ? 'text-success' : 'text-danger'"></td>
                         <td>
-                            <div class="d-flex justify-content-around">
-                                <div class="m-0 p-0">
+                            <div class="d-flex justify-content-start">
+                                <div class="m-0 p-0 me-3">
                                     <form method="post" th:action="@{/siparis/show}" class="m-0 p-0">
                                         <button type="submit" class="btn btn-sm btn-link text-decoration-none m-0 p-0"><span class="icon-yesil"><i
                                                 class="fa-solid fa-sync"></i></span></button>
