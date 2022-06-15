@@ -1,9 +1,11 @@
 package com.mordeninaf.boot.firin.service;
 
 import com.mordeninaf.boot.firin.model.Rapor;
+import com.mordeninaf.boot.firin.util.Parameters;
 import com.mordeninaf.boot.firin.util.Type;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -30,15 +32,19 @@ public class ExcelGenerator {
         workbook = new XSSFWorkbook();
         if (raporTipi == Type.T)
             fileName = "tahsilat_" + cariAd + "_" + baslangicTarihi + "_" + bitisTarihi + ".xlsx";
-        else
+        else if (raporTipi == Type.S)
             fileName = "siparis_" + cariAd + "_" + baslangicTarihi + "_" + bitisTarihi + ".xlsx";
+        else
+            fileName = "borc_" + cariAd + "_" + baslangicTarihi + "_" + bitisTarihi + ".xlsx";
     }
 
     private void writeHeader() {
         if (raporTipi == Type.T) {
             sheet = workbook.createSheet("Tahsilat Bilgileri");
-        } else {
+        } else if (raporTipi == Type.S){
             sheet = workbook.createSheet("Siparis Bilgileri");
+        } else {
+            sheet = workbook.createSheet("Borç Bilgileri");
         }
         Row row = sheet.createRow(0);
 
@@ -54,7 +60,7 @@ public class ExcelGenerator {
             createCell(row, 2, "Ödeme Tutarı", style);
             createCell(row, 3, "Ödeme Tarihi", style);
             createCell(row, 4, "Kayıt Tarihi", style);
-        } else {
+        } else if (raporTipi == Type.S) {
             createCell(row, 0, "Sıra ", style);
             createCell(row, 1, "Hesap ", style);
             createCell(row, 2, "Ürün", style);
@@ -62,6 +68,11 @@ public class ExcelGenerator {
             createCell(row, 4, "Tutar", style);
             createCell(row, 5, "Satış - İade", style);
             createCell(row, 6, "Kayıt Tarihi", style);
+        } else if (raporTipi == Type.B) {
+            createCell(row, 0, "Sıra ", style);
+            createCell(row, 1, "Hesap ", style);
+            createCell(row, 2, "Tutar", style);
+            createCell(row, 3, "Borç Tarihi", style);
         }
     }
 
@@ -87,9 +98,12 @@ public class ExcelGenerator {
         int rowCount = 0;
 
         CellStyle style = workbook.createCellStyle();
+        CellStyle cellStyleRight = workbook.createCellStyle();
         XSSFFont font = workbook.createFont();
         font.setFontHeight(14);
         style.setFont(font);
+        cellStyleRight.setFont(font);
+        cellStyleRight.setAlignment(HorizontalAlignment.RIGHT);
 
         for (Rapor record : listRecords) {
             Row row = sheet.createRow(++rowCount);
@@ -98,17 +112,22 @@ public class ExcelGenerator {
             if (raporTipi == Type.T) {
                 createCell(row, columnCount++, rowCount, style);
                 createCell(row, columnCount++, record.getCariAd(), style);
-                createCell(row, columnCount++, record.getTutar(), style);
-                createCell(row, columnCount++, record.getOdemeTarihi(), style);
-                createCell(row, columnCount, record.getKayitTarihi(), style);
-            } else {
+                createCell(row, columnCount++, record.getTutar(), cellStyleRight);
+                createCell(row, columnCount++, record.getOdemeTarihi(), cellStyleRight);
+                createCell(row, columnCount, record.getKayitTarihi(), cellStyleRight);
+            } else if (raporTipi == Type.S) {
                 createCell(row, columnCount++, rowCount, style);
                 createCell(row, columnCount++, record.getCariAd(), style);
                 createCell(row, columnCount++, record.getUrunAd(), style);
-                createCell(row, columnCount++, record.getAdet(), style);
-                createCell(row, columnCount++, record.getTutar(), style);
+                createCell(row, columnCount++, record.getAdet(), cellStyleRight);
+                createCell(row, columnCount++, record.getTutar(), cellStyleRight);
                 createCell(row, columnCount++, record.getSatisIade(), style);
-                createCell(row, columnCount, record.getKayitTarihi(), style);
+                createCell(row, columnCount, record.getKayitTarihi(), cellStyleRight);
+            } else if (raporTipi == Type.B) {
+                createCell(row, columnCount++, rowCount, style);
+                createCell(row, columnCount++, record.getCariAd(), style);
+                createCell(row, columnCount++, record.getTutar(), cellStyleRight);
+                createCell(row, columnCount, record.getKayitTarihi(), cellStyleRight);
             }
         }
     }

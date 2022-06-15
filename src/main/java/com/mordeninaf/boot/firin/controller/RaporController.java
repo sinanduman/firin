@@ -15,9 +15,9 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Controller
 public class RaporController {
@@ -169,11 +169,11 @@ public class RaporController {
             }
             borcList.sort(Comparator.comparing(Borc::getCariAd));
 
-            numberOfPages = siparisMapByCariId.size() > 0 ? siparisMapByCariId.size() : 1;
+            /* Tüm Tahsilat tek sayfada
+             * numberOfPages = 1;
+             * */
         }
-
         List<Integer> totalPages = NumberUtils.getTotalPages(numberOfPages);
-
 
         model.addAttribute("tahsilatList", tahsilatList);
         model.addAttribute("siparisList", siparisList);
@@ -217,6 +217,12 @@ public class RaporController {
         List<Tahsilat> tahsilatList = new ArrayList<>();
         List<Siparis> siparisList = new ArrayList<>();
 
+        /* CariId -> Toplam */
+        Map<Integer, Double> siparisMapByCariId = new ConcurrentHashMap<>();
+        /* CariId -> Toplam */
+        Map<Integer, Integer> tahsilatMapByCariId = new ConcurrentHashMap<>();
+
+
         if (tip.equals(Type.T.name())) {
             tahsilatList = tahsilatService.findAllByCariIdAndTarihOdemeBetween(cariId, basTarihi, bitisTarihi);
         } else if (tip.equals(Type.S.name())) {
@@ -231,17 +237,14 @@ public class RaporController {
                 borcSiparisList = siparisService.findAllByCariIdAndTarihBetween(cariId, basTarihi, bitisTarihi);
                 borcTahsilatList = tahsilatService.findAllByCariIdAndTarihOdemeBetween(cariId, basTarihi, bitisTarihi);
             }
-            /* CariId -> Toplam */
-            Map<Integer, Double> siparisMapByCariId = borcSiparisList.stream().collect(Collectors.groupingByConcurrent(Siparis::getCariId, Collectors.reducing(0d, Siparis::getTutar, Double::sum)));
-            /* CariId -> Toplam */
-            Map<Integer, Integer> tahsilatMapByCariId = borcTahsilatList.stream().collect(Collectors.groupingByConcurrent(Tahsilat::getCariId, Collectors.reducing(0, Tahsilat::getTutar, Integer::sum)));
+            siparisMapByCariId = borcSiparisList.stream().collect(Collectors.groupingByConcurrent(Siparis::getCariId, Collectors.reducing(0d, Siparis::getTutar, Double::sum)));
+            tahsilatMapByCariId = borcTahsilatList.stream().collect(Collectors.groupingByConcurrent(Tahsilat::getCariId, Collectors.reducing(0, Tahsilat::getTutar, Integer::sum)));
 
             for (Map.Entry<Integer, Double> entry : siparisMapByCariId.entrySet()) {
                 if (tahsilatMapByCariId.get(entry.getKey()) != null) {
                     siparisMapByCariId.put(entry.getKey(), entry.getValue() - tahsilatMapByCariId.get(entry.getKey()).doubleValue());
                 }
             }
-
         }
 
         List<Cari> cariList = cariService.findAll();
@@ -249,32 +252,20 @@ public class RaporController {
         Map<Integer, Cari> cariMap = cariList.stream().collect(Collectors.toConcurrentMap(Cari::getId, Function.identity()));
         Map<Integer, Urun> urunMap = urunList.stream().collect(Collectors.toConcurrentMap(Urun::getId, Function.identity()));
 
-        List<Rapor> raporList = mergeTahsilatSiparisCari(tahsilatList, siparisList, cariMap, urunMap);
+        List<Rapor> raporList = mergeTahsilatSiparisCariBorc(tahsilatList, siparisList, siparisMapByCariId, cariMap, urunMap, basTarihi, bitisTarihi);
 
         String cariAd = (cariId == 0) ? "tum" : cariMap.get(cariId).getCariAd();
-        ExcelGenerator generator = new ExcelGenerator(raporList, tip.equals(Type.T.name()) ? Type.T : Type.S, cariAd, basTarihi, bitisTarihi);
+        Type raporTipi = tip.equals("T") ? Type.T : tip.equals("S") ? Type.S : Type.B;
+        ExcelGenerator generator = new ExcelGenerator(raporList, raporTipi, cariAd, basTarihi, bitisTarihi);
         generator.generate(response);
     }
 
-    private List<Rapor> mergeTahsilatCari(List<Tahsilat> tahsilatList, Map<Integer, Cari> cariMap) {
+    private List<Rapor> mergeTahsilatSiparisCariBorc(List<Tahsilat> tahsilatList, List<Siparis> siparisList, Map<Integer, Double> siparisMapByCariId, Map<Integer, Cari> cariMap, Map<Integer, Urun> urunMap, String basTarihi, String bitisTarihi) {
         List<Rapor> raporList = new ArrayList<>();
         for (Tahsilat tahsilat : tahsilatList) {
             Rapor rapor = new Rapor();
             rapor.setTutar(tahsilat.getTutar().doubleValue());
-            rapor.setOdemeTarihi(tahsilat.getTarihOdeme());
-            rapor.setKayitTarihi(DateUtils.toTurkishDateTime(tahsilat.getTarih()));
-            rapor.setCariAd(cariMap.get(tahsilat.getCariId()).getCariAd());
-            raporList.add(rapor);
-        }
-        return raporList;
-    }
-
-    private List<Rapor> mergeTahsilatSiparisCari(List<Tahsilat> tahsilatList, List<Siparis> siparisList, Map<Integer, Cari> cariMap, Map<Integer, Urun> urunMap) {
-        List<Rapor> raporList = new ArrayList<>();
-        for (Tahsilat tahsilat : tahsilatList) {
-            Rapor rapor = new Rapor();
-            rapor.setTutar(tahsilat.getTutar().doubleValue());
-            rapor.setOdemeTarihi(tahsilat.getTarihOdeme());
+            rapor.setOdemeTarihi(DateUtils.toTurkishDateFromIso(tahsilat.getTarihOdeme()));
             rapor.setKayitTarihi(DateUtils.toTurkishDateTime(tahsilat.getTarih()));
             rapor.setCariAd(cariMap.get(tahsilat.getCariId()).getCariAd());
             raporList.add(rapor);
@@ -282,35 +273,21 @@ public class RaporController {
         for (Siparis siparis : siparisList) {
             Rapor rapor = new Rapor();
             rapor.setTutar(siparis.getTutar());
-            rapor.setKayitTarihi(siparis.getTarihSiparis());
+            rapor.setKayitTarihi(DateUtils.toTurkishDateFromIso(siparis.getTarihSiparis()));
             rapor.setCariAd(cariMap.get(siparis.getCariId()).getCariAd());
             rapor.setUrunAd(urunMap.get(siparis.getUrunId()).getUrunAd());
             rapor.setAdet(siparis.getAdet());
             rapor.setSatisIade(siparis.getSatisIade() == 1 ? "SATIŞ": "İADE");
             raporList.add(rapor);
         }
+        for (Map.Entry<Integer, Double> entry : siparisMapByCariId.entrySet()) {
+            Rapor rapor = new Rapor();
+            rapor.setCariId(entry.getKey());
+            rapor.setCariAd(cariMap.get(entry.getKey()).getCariAd());
+            rapor.setTutar(entry.getValue());
+            rapor.setKayitTarihi(DateUtils.toTurkishDateFromIso(basTarihi));
+            raporList.add(rapor);
+        }
         return raporList;
-    }
-
-    private synchronized void mahsuplasSiparisTahsilat(Map<Integer, Double> cariOnayliSiparisMap, Map<Integer, Double> cariTahsilatMap) {
-        for(Map.Entry<Integer, Double> entry : cariOnayliSiparisMap.entrySet()) {
-            Double tahsilatTutar = cariTahsilatMap.get(entry.getKey());
-            if (tahsilatTutar != null) {
-                entry.setValue(entry.getValue() - tahsilatTutar);
-            }
-        }
-        /* Tahsilatta var Siparis de yok ise
-         * Tahsilat tutarinin Siparise Ekle (Negatif olarak) */
-        for(Map.Entry<Integer, Double> entry : cariTahsilatMap.entrySet()) {
-            cariOnayliSiparisMap.computeIfAbsent(entry.getKey(), k -> entry.getValue() * -1);
-        }
-    }
-
-    private Double getSiparisTutar (Siparis siparis) {
-        /* Satis is Arti Iade ise Eksi */
-        if (siparis.getSatisIade() == 0)
-            return -1 * siparis.getTutar();
-        else
-            return siparis.getTutar();
     }
 }
