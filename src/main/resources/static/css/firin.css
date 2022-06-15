@@ -1,11 +1,11 @@
 @font-face {
     font-family:"JetBrains Mono";
-    src: url("JetBrainsMono-VariableFont_wght.ttf") format("truetype");
+    src: url("../webfonts/JetBrainsMono-VariableFont_wght.ttf") format("truetype");
 }
 
 @font-face {
     font-family:"Comfortaa";
-    src: url("Comfortaa-VariableFont_wght.ttf") format("truetype");
+    src: url("../webfonts/Comfortaa-VariableFont_wght.ttf") format("truetype");
 }
 
 :root {
