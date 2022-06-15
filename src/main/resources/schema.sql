@@ -12,6 +12,7 @@ create table if not exists URUN (
    id INTEGER PRIMARY KEY,
    urun_ad varchar(255) not null,
    urun_fiyat real not null default 1,
+   cari_id integer not null default 0,
    aktif INTEGER not null default 1,
    tarih datetime not null
 );
@@ -32,6 +33,7 @@ create table if not exists SIPARIS (
    tutar real not null,
    onay integer not null,
    satis_iade integer not null default 1,
+   tarih_siparis varchar(32) not null,
    tarih datetime not null
 );
 

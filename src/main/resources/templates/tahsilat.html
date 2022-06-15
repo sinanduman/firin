@@ -63,14 +63,14 @@
                     </div>
                 </form>
 
-                <table class="table table-responsive table-responsive-lg table-responsive-md table-responsive-sm table-striped border-top-2px p-0 m-0">
+                <table class="table table-responsive table-responsive-lg table-responsive-md table-responsive-sm table-striped table-hover table-borderless border-top-2px p-0 m-0">
                     <tr class="but-purple d-table-row">
-                        <th class="text-white-50">ID</th>
-                        <th class="text-white-50">Kimden</th>
-                        <th class="text-white-50">Tutar</th>
-                        <th class="text-white-50">Tahsilat Tarih</th>
-                        <th class="text-white-50">İşlem Tarihi</th>
-                        <th class="text-white-50">Aksiyon</th>
+                        <th style="width: 10%" class="text-white-50">ID</th>
+                        <th style="width: 18%" class="text-white-50">Kimden</th>
+                        <th style="width: 18%" class="text-white-50">Tutar</th>
+                        <th style="width: 18%" class="text-white-50">Tahsilat Tarihi</th>
+                        <th style="width: 18%" class="text-white-50">İşlem Tarih</th>
+                        <th style="width: 18%" class="text-white-50">Aksiyon</th>
                     </tr>
                     <tr th:if="${#lists.isEmpty(tahsilatList)}">
                         <td colspan="10">Henüz Kayıt Yok...</td>

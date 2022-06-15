@@ -1,7 +1,9 @@
 package com.mordeninaf.boot.firin.controller;
 
+import com.mordeninaf.boot.firin.model.Cari;
 import com.mordeninaf.boot.firin.model.Siparis;
 import com.mordeninaf.boot.firin.model.Urun;
+import com.mordeninaf.boot.firin.service.CariService;
 import com.mordeninaf.boot.firin.service.SiparisService;
 import com.mordeninaf.boot.firin.service.UrunService;
 import com.mordeninaf.boot.firin.util.DateUtils;
@@ -18,6 +20,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Controller
 public class UrunController {
@@ -28,24 +33,34 @@ public class UrunController {
     private UrunService urunService;
     @Autowired
     private SiparisService siparisService;
+    @Autowired
+    private CariService cariService;
 
     @GetMapping("/urun")
     public String main(Model model) {
         List<Urun> urunList = urunService.findAll();
+        Map<Integer, Cari> cariMap = cariService.findAll().stream().filter(c -> c.getAktif() == 1).collect(Collectors.toConcurrentMap(Cari::getId, Function.identity()));
         model.addAttribute("urun", null);
         model.addAttribute("urunObj", new Urun());
         model.addAttribute("urunlist", urunList);
+        model.addAttribute("cariId", 0);
+        model.addAttribute("cariMap", cariMap);
         model.addAttribute("dateUtils", DateUtils.class);
         model.addAttribute("textUtils", TextUtils.class);
         return "urun";
     }
 
     @PostMapping(value = "/urun/show")
-    public String show(Model model, @RequestParam(name = "id") Integer id) {
+    public String show(Model model,
+                       @RequestParam(name = "id") Integer id,
+                       @RequestParam(name = "cariId") Integer cariId) {
         Urun urun = urunService.findById(id);
         List<Urun> urunList = urunService.findAll();
+        Map<Integer, Cari> cariMap = cariService.findAll().stream().filter(c -> c.getAktif() == 1).collect(Collectors.toConcurrentMap(Cari::getId, Function.identity()));
         model.addAttribute("urun", urun);
         model.addAttribute("urunlist", urunList);
+        model.addAttribute("cariId", cariId);
+        model.addAttribute("cariMap", cariMap);
         model.addAttribute("urunObj", new Urun());
         model.addAttribute("dateUtils", DateUtils.class);
         model.addAttribute("textUtils", TextUtils.class);
@@ -67,7 +82,12 @@ public class UrunController {
                 LOGGER.info("{} - ÜRÜN kaydı eklendi... YENI: {}", LocalDateTime.now(ZoneId.systemDefault()), urunObj);
             }
         }
-        redirAttrs.addFlashAttribute("success", "Kayıt Başarılı.");
+        if (urunObj != null) {
+            redirAttrs.addFlashAttribute("success", "İşlem Başarılı.");
+            redirAttrs.addFlashAttribute("registered", urunObj.getId());
+        } else {
+            redirAttrs.addFlashAttribute("error", "İşlem Başarısız.");
+        }
         return "redirect:/urun";
     }
 

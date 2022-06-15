@@ -55,6 +55,13 @@
                     </div>
 
                     <div class="input-group mb-2">
+                        <span class="input-group-text but-deep-purple border-koseli-1px width150px">Tarih<span class="pe-2"></span><i class="fa-solid fa-calendar-days"></i></span>
+                        <div class="input-group-text p-0 border-koseli-1px date">
+                            <input type="date" th:value="${siparis ne null} ? ${siparis.getTarihSiparis()} : ${dateUtils.toIsoDateFromNow()}" class="form-control border-0" required th:name="tarihSiparis" th:id="tarihSiparis">
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-2">
                         <span class="input-group-text but-deep-purple border-koseli-1px width150px">Onay<span class="pe-2"></span><i class="fa-solid fa-check"></i></span>
                         <div class="input-group-text border-koseli-1px">
                             <input class="form-check-input mt-0 border-koseli-1px" type="checkbox" th:id="onayCheck" th:name="onayCheck" th:checked="${siparis ne null and siparis.getOnay() eq 1}">
@@ -85,14 +92,14 @@
                     </div>
                 </form>
 
-                <table class="table table-responsive table-responsive-lg table-responsive-md table-responsive-sm table-striped border-top-2px p-0 m-0">
+                <table class="table table-responsive table-responsive-lg table-responsive-md table-responsive-sm table-striped table-hover table-borderless border-top-2px p-0 m-0">
                     <tr class="but-purple d-table-row">
                         <th class="text-white-50">ID</th>
                         <th class="text-white-50">Kime</th>
                         <th class="text-white-50">Ürün</th>
                         <th class="text-white-50">Adet</th>
                         <th class="text-white-50">Tutar</th>
-                        <th class="text-white-50">İşlem Tarihi</th>
+                        <th class="text-white-50">Sipariş - İşlem Tarihi</th>
                         <th class="text-white-50">Onay</th>
                         <th class="text-white-50">S - İ</th>
                         <th class="text-white-50">Aksiyon</th>
@@ -106,7 +113,7 @@
                         <td class="txt-purple" th:text="${urunMap.get(siparis.getUrunId()).getUrunAd()}"></td>
                         <td class="txt-redo" th:text="${siparis.getAdet()}"></td>
                         <td class="txt-redo txt-mono" th:text="${textUtils.convertTurkishLira(siparis.getTutar())}"></td>
-                        <td th:text="${dateUtils.toTurkishDateTime(siparis.getTarih())}"></td>
+                        <td th:text="${dateUtils.toTurkishDateFromIso(siparis.getTarihSiparis()) + ' - ' + dateUtils.toTurkishDateTime(siparis.getTarih())}"></td>
                         <td th:text="${siparis.getOnay() eq 1} ? 'EVET' : 'HAYIR'"></td>
                         <td th:text="${siparis.getSatisIade() eq 1} ? 'SATIŞ' : 'İADE'" th:class="${siparis.getSatisIade() eq 1} ? 'text-success' : 'text-danger'"></td>
                         <td>

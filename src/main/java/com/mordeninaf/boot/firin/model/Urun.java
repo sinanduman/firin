@@ -20,6 +20,7 @@ public class Urun {
     private Integer id;
     private String urunAd;
     private double urunFiyat = 1;
+    private int cariId = 0;
     private int aktif = 1;
     private LocalDateTime tarih;
 

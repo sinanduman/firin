@@ -71,7 +71,12 @@ public class CariController {
                 LOGGER.info("{} - CARİ kayıt eklendi... YENI: {}", LocalDateTime.now(ZoneId.systemDefault()), cariObj);
             }
         }
-        redirAttrs.addFlashAttribute("success", "Kayıt Başarılı.");
+        if (cariObj != null) {
+            redirAttrs.addFlashAttribute("success", "İşlem Başarılı.");
+            redirAttrs.addFlashAttribute("registered", cariObj.getId());
+        } else {
+            redirAttrs.addFlashAttribute("error", "İşlem Başarısız.");
+        }
         return "redirect:/cari";
     }
 

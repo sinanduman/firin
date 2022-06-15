@@ -39,18 +39,18 @@
                     </div>
 
                     <div class="input-group mb-2">
+                        <span class="input-group-text but-deep-purple border-koseli-1px width150px">Cari<span class="pe-2"></span><i class="fa-solid fa-user-tie"></i></span>
+                        <select th:name="cariId" th:id="cariId" class="form-control form-select border-koseli-1px">
+                            <option th:value="${'0'}" th:text="${'-- GENEL --'}" th:selected="${cariId eq 0}"></option>
+                            <option th:if="${cari.getValue().getAktif() == 1}" th:each="cari : ${cariMap.entrySet()}" th:value="${cari.getKey()}" th:text="${cari.getValue().getCariAd()  + ' - ' + cari.getValue().getCariYetkili()}" th:selected="${urun ne null and cari.getKey() == urun.getCariId()}"></option>
+                        </select>
+                    </div>
+
+                    <div class="input-group mb-2">
                         <label class="input-group-text but-deep-purple border-koseli-1px width150px">Durum</label>
                         <select th:name="aktif" th:id="aktif" class="form-control form-select border-koseli-1px">
-                            <th:block th:if="${urun eq null}">
-                                <option selected value="1">Aktif</option>
-                                <option value="0">Pasif</option>
-                            </th:block>
-                            <th:block th:if="${urun ne null}">
-                                <option th:if="${urun.getAktif() eq 0}" value="0" selected>Pasif</option>
-                                <option th:if="${urun.getAktif() eq 0}" value="1">Aktif</option>
-                                <option th:if="${urun.getAktif() eq 1}" value="1" selected>Aktif</option>
-                                <option th:if="${urun.getAktif() eq 1}" value="0">Pasif</option>
-                            </th:block>
+                            <option th:selected="${(urun eq null) or (urun ne null and urun.getAktif() eq 1)}" value="1">Aktif</option>
+                            <option th:selected="${urun ne null and urun.getAktif() eq 0}" value="0">Pasif</option>
                         </select>
                     </div>
                     <div class="row" style="border:0px solid green;">
@@ -64,11 +64,12 @@
                     </div>
                 </form>
 
-                <table class="table table-responsive table-responsive-lg table-responsive-md table-responsive-sm table-striped border-top-2px p-0 m-0">
+                <table id="urunTable" class="table table-responsive table-responsive-lg table-responsive-md table-responsive-sm table-striped table-hover table-borderless border-top-2px p-0 m-0">
                     <tr class="but-purple d-table-row">
                         <th class="text-white-50">ID</th>
                         <th class="text-white-50">Adı</th>
                         <th class="text-white-50">Fiyatı</th>
+                        <th class="text-white-50">Kime</th>
                         <th class="text-white-50">Durum</th>
                         <th class="text-white-50">Tarih</th>
                         <th class="text-white-50">Aksiyon</th>
@@ -76,10 +77,11 @@
                     <tr th:if="${#lists.isEmpty(urunlist)}">
                         <td colspan="5">No Records found. Add some...!</td>
                     </tr>
-                    <tr th:id="'tr_' + ${item.getId()}" th:each="item : ${urunlist}" th:classappend="${item.getAktif()==0} ? 'pasif'">
+                    <tr th:id="'tr_' + ${item.getId()}" th:each="item : ${urunlist}" th:classappend="${registered eq item.getId()} ? 'new_update'">
                         <td th:text="${item.getId()}"></td>
                         <td class="txt-deep-purple" th:text="${item.getUrunAd()}"></td>
                         <td class="txt-redo txt-mono" th:text="${textUtils.convertTurkishLira(item.getUrunFiyat())}"></td>
+                        <td th:text="${item.getCariId() eq 0} ? 'GENEL' : ${cariMap.get(item.getCariId()).getCariAd()}" th:classappend="${item.getCariId() ne 0} ? 'txt-purple'"></td>
                         <td th:text="${item.getAktif() eq 1} ? 'Aktif' : 'Pasif'"></td>
                         <td th:text="${item.getTarih() ne null } ? ${dateUtils.toTurkishDateTime(item.getTarih())}"></td>
                         <td>
@@ -90,6 +92,7 @@
                                         <button type="submit" class="btn btn-sm btn-link text-decoration-none m-0 p-0"><span class="icon-yesil"><i
                                                 class="fa-solid fa-sync"></i></span></button>
                                         <input type="hidden" name="id" th:value="${item.getId()}">
+                                        <input type="hidden" name="cariId" th:value="${item.getCariId()}">
                                     </form>
                                 </div>
                                 <div class="m-0 p-0">
@@ -115,6 +118,12 @@
 
 <script th:src="@{/js/firin.js}"></script>
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+
+<!--
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/jq-3.6.0/dt-1.12.1/datatables.min.css"/>
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs5/jq-3.6.0/dt-1.12.1/datatables.min.js"></script>
+-->
 
 <script>
 </script>

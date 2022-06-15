@@ -14,11 +14,14 @@ import javax.persistence.Id;
 public class Rapor {
     @Id
     private Integer id;
+    private Integer cariId;
     private String cariAd;
+    private Integer urunId;
     private String urunAd;
     private Integer adet;
     private Double tutar;
     private String satisIade;
+    private String siparisTarihi;
     private String odemeTarihi;
     private String kayitTarihi;
 }

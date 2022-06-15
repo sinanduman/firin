@@ -22,6 +22,7 @@
                         <select th:name="tip" th:id="tip" class="form-control form-select border-koseli-1px">
                             <option th:selected="${tip eq 'T'}" value="T">Tahsilat</option>
                             <option th:selected="${tip eq 'S'}" value="S">Sipariş</option>
+                            <option th:selected="${tip eq 'B'}" value="B">Borç</option>
                         </select>
                     </div>
 
@@ -36,10 +37,22 @@
                         </select>
                     </div>
 
+                    <div class="input-group mb-2" th:style="${urunId eq 0 and tip ne 'S'} ? 'display:none;'" id="div_urun_id">
+                        <span class="input-group-text but-deep-purple border-koseli-1px width150px">Ürün<span class="pe-2"></span><i class="fa-solid fa-wheat-awn"></i></span>
+                        <select th:name="urunId" th:id="urunId" class="form-control form-select border-koseli-1px">
+                            <option th:value="${'0'}" th:text="${'-- TÜM ÜRÜNLER --'}" th:selected="${urunId eq 0}"></option>
+                            <option th:each="urun : ${urunList}"
+                                    th:if="${urun.getAktif()==1}"
+                                    th:value="${urun.getId()}"
+                                    th:text="${urun.getUrunAd()}"
+                                    th:selected="${urun.getId() == urunId}"></option>
+                        </select>
+                    </div>
+
                     <div class="input-group mb-2">
                         <span class="input-group-text but-deep-purple border-koseli-1px width150px">Başlangıç<span class="pe-2"></span><i class="fa-solid fa-calendar-days"></i></span>
                         <div class="input-group-text p-0 border-koseli-1px date">
-                            <input type="date" th:value="${dateUtils.toIsoDate(baslangicTarihi)}" class="form-control border-0" required th:name="baslangicTarihi" th:id="baslangicTarihi">
+                            <input type="date" th:value="${dateUtils.toIsoDate(basTarihi)}" class="form-control border-0" required th:name="basTarihi" th:id="basTarihi">
                         </div>
                         <input th:id="page" th:name="page" type="hidden" th:value="${pageNo ne null} ? ${pageNo} : 0"/>
                     </div>
@@ -58,7 +71,7 @@
                     </div>
                 </form>
 
-                <table class="table table-responsive table-responsive-lg table-responsive-md table-responsive-sm table-striped border-top-2px p-0 m-0">
+                <table class="table table-responsive table-responsive-lg table-responsive-md table-responsive-sm table-striped table-hover table-borderless border-top-2px p-0 m-0">
                     <th:block th:if="${tip eq 'T'}">
                         <tr class="but-purple d-table-row">
                             <th class="text-white-50">ID</th>
@@ -102,19 +115,37 @@
                             <td th:text="${dateUtils.toTurkishDateTime(siparis.getTarih())}"></td>
                         </tr>
                     </th:block>
+
+                    <th:block th:if="${tip eq 'B'}">
+                        <tr class="but-purple d-table-row">
+                            <th style="width: 10%" class="text-white-50">Sıra</th>
+                            <th style="width: 30%" class="text-white-50">Kim</th>
+                            <th style="width: 30%" class="text-white-50">Borç Tutarı</th>
+                            <th style="width: 30%" class="text-white-50">Borç Tarihi</th>
+                        </tr>
+                        <tr th:if="${borcList.isEmpty()}">
+                            <td colspan="10">Henüz Kayıt Yok...</td>
+                        </tr>
+                        <tr th:id="'tr_' + ${borc.getCariId()}" th:each="borc,status : ${borcList}">
+                            <td class="txt-deep-purple" th:text="${status.index + 1}"></td>
+                            <td class="txt-deep-purple" th:text="${borc.getCariAd()}"></td>
+                            <td class="txt-redo txt-mono" th:text="${textUtils.convertTurkishLira(borc.getTutar())}"></td>
+                            <td th:text="${dateUtils.toTurkishDate(borc.getTarih())}"></td>
+                        </tr>
+                    </th:block>
                 </table>
             </div>
         </div>
     </div>
 
-    <div class="row" th:if="${!tahsilatList.isEmpty() or !siparisList.isEmpty()}">
+    <div class="row" th:if="${!tahsilatList.isEmpty() or !siparisList.isEmpty() or !borcList.isEmpty()}">
         <div class="m-0 p-0">
             <div class="col-md-10 col-sm-10 mx-auto mt-3">
                 <div class="d-flex m-0 p-0 justify-content-between">
                     <nav aria-label="..." class="m-0 p-0">
-                        <ul class="pagination border-koseli-1px" th:if="${!tahsilatList.isEmpty() or !siparisList.isEmpty()}">
+                        <ul class="pagination border-koseli-1px" th:if="${!tahsilatList.isEmpty() or !siparisList.isEmpty() or !borcList.isEmpty()}">
                             <li class="page-item">
-                                <a class="page-link border-0 txt-deep-purple" id="excelDownload" th:href="@{/rapor/excel/(cariId = ${cariId}, tarih = ${baslangicTarihi}, bitis = ${bitisTarihi}, tip = ${tip})}"><span th:text="${tip} + ' Rapor '"></span> <i class="fa-solid fa-file-excel"></i></a>
+                                <a class="page-link border-0 txt-deep-purple" id="excelDownload" th:href="@{/rapor/excel/(cariId = ${cariId}, tarih = ${basTarihi}, bitis = ${bitisTarihi}, tip = ${tip})}"><span th:text="${tip} + ' Rapor '"></span> <i class="fa-solid fa-file-excel"></i></a>
                             </li>
                         </ul>
                     </nav>
@@ -123,15 +154,15 @@
                         <ul class="pagination border-koseli-1px">
                             <li class="page-item" th:disabled="${pageNo==0}">
                                 <a class="page-link border-0 txt-deep-purple" th:if="${pageNo==0}">İlk</a>
-                                <a class="page-link border-0 txt-deep-purple" th:if="${pageNo>0}" th:href="@{/rapor/show/(page = 0, cariId = ${cariId}, tarih = ${baslangicTarihi}, bitis = ${bitisTarihi})}">İlk</a>
+                                <a class="page-link border-0 txt-deep-purple" th:if="${pageNo>0}" th:href="@{/rapor/show/(page = 0, cariId = ${cariId}, tarih = ${basTarihi}, bitis = ${bitisTarihi})}">İlk</a>
                             </li>
                             <li class="page-item" th:disabled="${pageNo==0}">
                                 <a class="page-link border-0 txt-deep-purple" th:if="${pageNo==0}">Önceki</a>
-                                <a class="page-link border-0 txt-deep-purple" th:if="${pageNo>0}" th:href="@{/rapor/show/(page = ${pageNo}-1, cariId = ${cariId}, tarih = ${baslangicTarihi}, bitis = ${bitisTarihi})}">Önceki</a>
+                                <a class="page-link border-0 txt-deep-purple" th:if="${pageNo>0}" th:href="@{/rapor/show/(page = ${pageNo}-1, cariId = ${cariId}, tarih = ${basTarihi}, bitis = ${bitisTarihi})}">Önceki</a>
                             </li>
                             <li class="page-item" th:each="pageIndex : ${totalPages}">
                                 <th:block th:if="${(pageIndex.intValue() <= (pageNo + 2)) and (pageIndex.intValue() >= (pageNo - 2)) }">
-                                    <a class="page-link border-0" th:classappend="${pageIndex.intValue() == pageNo} ? 'but-deep-purple active' : 'txt-deep-purple'" th:href="@{/rapor/show/(page = ${pageIndex.intValue()}, cariId = ${cariId}, tarih = ${baslangicTarihi}, bitis = ${bitisTarihi})}" th:text="${(pageIndex.intValue() + 1)}"></a>
+                                    <a class="page-link border-0" th:classappend="${pageIndex.intValue() == pageNo} ? 'but-deep-purple active' : 'txt-deep-purple'" th:href="@{/rapor/show/(page = ${pageIndex.intValue()}, cariId = ${cariId}, tarih = ${basTarihi}, bitis = ${bitisTarihi})}" th:text="${(pageIndex.intValue() + 1)}"></a>
                                 </th:block>
                                 <th:block th:if="${!((pageIndex.intValue() <= (pageNo + 2)) and (pageIndex.intValue() >= (pageNo - 2))) and (pageIndex.intValue() == 0 or pageIndex.intValue() == totalPages.size() -1)}">
                                     <a class="page-link border-0 txt-deep-purple" th:text=".."></a>
@@ -139,11 +170,11 @@
                             </li>
                             <li class="page-item" th:disabled="${pageNo+1 == totalPages.size()}">
                                 <a class="page-link border-0 txt-deep-purple" th:if="${(pageNo+1) == totalPages.size()}">Sonraki</a>
-                                <a class="page-link border-0 txt-deep-purple" th:if="${(pageNo+1) < totalPages.size()}" th:href="@{/rapor/show/(page = ${pageNo}+1, cariId = ${cariId}, tarih = ${baslangicTarihi}, bitis = ${bitisTarihi})}">Sonraki</a>
+                                <a class="page-link border-0 txt-deep-purple" th:if="${(pageNo+1) < totalPages.size()}" th:href="@{/rapor/show/(page = ${pageNo}+1, cariId = ${cariId}, tarih = ${basTarihi}, bitis = ${bitisTarihi})}">Sonraki</a>
                             </li>
                             <li class="page-item" th:disabled="${(pageNo+1) == totalPages.size()}">
                                 <a class="page-link border-0 txt-deep-purple" th:if="${(pageNo+1) == totalPages.size()}">Son</a>
-                                <a class="page-link border-0 txt-deep-purple" th:if="${(pageNo+1) < totalPages.size()}" th:href="@{/rapor/show/(page = ${totalPages.size()} - 1, cariId = ${cariId}, tarih = ${baslangicTarihi}, bitis = ${bitisTarihi})}">Son</a>
+                                <a class="page-link border-0 txt-deep-purple" th:if="${(pageNo+1) < totalPages.size()}" th:href="@{/rapor/show/(page = ${totalPages.size()} - 1, cariId = ${cariId}, tarih = ${basTarihi}, bitis = ${bitisTarihi})}">Son</a>
                             </li>
                         </ul>
                     </nav>
@@ -166,18 +197,18 @@
 
 
 <script>
-    /*
-    let tahsil = document.getElementById("tahsil");
-    let tahsilCheck = document.getElementById("tahsilCheck");
-    tahsilCheck.addEventListener("click", (e) => {
-        if (tahsilCheck.checked) {
-            tahsil.value = 1;
+    let tip = document.getElementById("tip");
+    let urunId = document.getElementById("urunId");
+    let div_urun_id = document.getElementById("div_urun_id");
+    tip.addEventListener("change", (e) => {
+        let tipValue = tip.options[tip.selectedIndex].value;
+        if (tipValue === 'S') {
+            div_urun_id.style.display = "flex";
         } else {
-            tahsil.value = 0;
+            urunId.selectedIndex = 0;
+            div_urun_id.style.display = "none";
         }
     });
-     */
 </script>
-
 </body>
 </html>

@@ -43,7 +43,41 @@ public class SiparisService {
         if (cariId == 0) {
             return siparisRepository.findAllByTarihBetween(LocalDate.parse(basTarihi).atStartOfDay(), LocalDate.parse(bitisTarihi).atStartOfDay(), paging);
         } else {
-            return siparisRepository.findAllByCariIdAndTarihBetween(cariId, LocalDate.parse(basTarihi).atStartOfDay() , LocalDate.parse(bitisTarihi).atStartOfDay(), paging);
+            return siparisRepository.findAllByCariIdAndTarihBetween(cariId, LocalDate.parse(basTarihi).atStartOfDay(), LocalDate.parse(bitisTarihi).atStartOfDay(), paging);
+        }
+    }
+
+
+    public Page<Siparis> findAllByCariIdAndUrunIdAndTarihBetween(Integer cariId, Integer urunId, String basTarihi, String bitisTarihi, int pageNo, int pageSize, String sortBy) {
+        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).descending());
+        if (cariId == 0) {
+            if (urunId == 0) {
+                return siparisRepository.findAllByTarihBetween(LocalDate.parse(basTarihi).atStartOfDay(), LocalDate.parse(bitisTarihi).atStartOfDay(), paging);
+            } else {
+                return siparisRepository.findAllByUrunIdAndTarihBetween(urunId, LocalDate.parse(basTarihi).atStartOfDay(), LocalDate.parse(bitisTarihi).atStartOfDay(), paging);
+            }
+        } else {
+            if (urunId == 0) {
+                return siparisRepository.findAllByCariIdAndTarihBetween(cariId, LocalDate.parse(basTarihi).atStartOfDay(), LocalDate.parse(bitisTarihi).atStartOfDay(), paging);
+            } else {
+                return siparisRepository.findAllByCariIdAndUrunIdAndTarihBetween(cariId, urunId, LocalDate.parse(basTarihi).atStartOfDay(), LocalDate.parse(bitisTarihi).atStartOfDay(), paging);
+            }
+        }
+    }
+
+    public List<Siparis> findAllByCariIdAndUrunIdAndTarihBetween(Integer cariId, Integer urunId, String basTarihi, String bitisTarihi) {
+        if (cariId == 0) {
+            if (urunId == 0) {
+                return siparisRepository.findAllByTarihBetween(LocalDate.parse(basTarihi).atStartOfDay(), LocalDate.parse(bitisTarihi).atStartOfDay());
+            } else {
+                return siparisRepository.findAllByUrunIdAndTarihBetween(urunId, LocalDate.parse(basTarihi).atStartOfDay(), LocalDate.parse(bitisTarihi).atStartOfDay());
+            }
+        } else {
+            if (urunId == 0) {
+                return siparisRepository.findAllByCariIdAndTarihBetween(cariId, LocalDate.parse(basTarihi).atStartOfDay(), LocalDate.parse(bitisTarihi).atStartOfDay());
+            } else {
+                return siparisRepository.findAllByCariIdAndUrunIdAndTarihBetween(cariId, urunId, LocalDate.parse(basTarihi).atStartOfDay(), LocalDate.parse(bitisTarihi).atStartOfDay());
+            }
         }
     }
 
@@ -79,5 +113,13 @@ public class SiparisService {
 
     public List<Siparis> findAllByOnayIs(int onayValue) {
         return siparisRepository.findAllByOnayIs(onayValue);
+    }
+
+    public List<Siparis> findAllByTarihBetween(String basTarihi, String bitisTarihi) {
+        return siparisRepository.findAllByTarihBetween(LocalDate.parse(basTarihi).atStartOfDay(), LocalDate.parse(bitisTarihi).atStartOfDay());
+    }
+
+    public List<Siparis> findAllByUrunIdAndTarihBetween(Integer urunId, String basTarihi, String bitisTarihi) {
+        return siparisRepository.findAllByUrunIdAndTarihBetween(urunId, LocalDate.parse(basTarihi).atStartOfDay(), LocalDate.parse(bitisTarihi).atStartOfDay());
     }
 }

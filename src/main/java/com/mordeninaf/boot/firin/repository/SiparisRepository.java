@@ -12,12 +12,16 @@ import java.util.List;
 @Repository
 public interface SiparisRepository extends PagingAndSortingRepository<Siparis, Integer> {
     List<Siparis> findAll();
-    Page<Siparis> findAll(Pageable pageable);
     List<Siparis> findAllByCariId(Integer cariId);
+    List<Siparis> findAllByUrunId(Integer urunId);
     List<Siparis> findAllByOnayIs(int onayValue);
     List<Siparis> findAllByTarihBetween(LocalDateTime basTarihi, LocalDateTime bitisTarihi);
     List<Siparis> findAllByCariIdAndTarihBetween(Integer cariId, LocalDateTime basTarihi, LocalDateTime bitisTarihi);
+    List<Siparis> findAllByUrunIdAndTarihBetween(Integer urunId, LocalDateTime basTarihi, LocalDateTime bitisTarihi);
+    List<Siparis> findAllByCariIdAndUrunIdAndTarihBetween(Integer cariId, Integer urunId, LocalDateTime basTarihi, LocalDateTime bitisTarihi);
+    Page<Siparis> findAll(Pageable pageable);
     Page<Siparis> findAllByTarihBetween(LocalDateTime basTarihi, LocalDateTime bitisTarihi, Pageable paging);
     Page<Siparis> findAllByCariIdAndTarihBetween(Integer cariId, LocalDateTime basTarihi, LocalDateTime bitisTarihi, Pageable paging);
-    List<Siparis> findAllByUrunId(Integer urunId);
+    Page<Siparis> findAllByUrunIdAndTarihBetween(Integer urunId, LocalDateTime basTarihi, LocalDateTime bitisTarihi, Pageable paging);
+    Page<Siparis> findAllByCariIdAndUrunIdAndTarihBetween(Integer cariId, Integer urunId, LocalDateTime basTarihi, LocalDateTime bitisTarihi, Pageable paging);
 }

@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -25,12 +26,6 @@ public class Siparis {
     private int onay = 0;
     private int aktif = 1;
     private int satisIade;
+    private String tarihSiparis;
     private LocalDateTime tarih;
-
-    public Siparis(Integer urunId, Integer cariId, Integer adet, LocalDateTime tarih) {
-        this.urunId = urunId;
-        this.cariId = cariId;
-        this.adet = adet;
-        this.tarih = tarih;
-    }
 }

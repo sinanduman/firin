@@ -14,12 +14,12 @@ public interface TahsilatRepository extends PagingAndSortingRepository<Tahsilat,
     List<Tahsilat> findAll();
     Page<Tahsilat> findAll(Pageable pageable);
     Page<Tahsilat> findAllByCariId(Integer cariId, Pageable pageable);
-    Page<Tahsilat> findAllByCariIdAndTarihOdeme(Integer cariId, String tahsilatTarihi, Pageable pageable);
-    Page<Tahsilat> findAllByTarihOdeme(String tahsilatTarihi, Pageable pageable);
-    List<Tahsilat> findAllByTarihOdemeBetween(String tahsilatTarihi, String bitisTarihi);
-    Page<Tahsilat> findAllByTarihOdemeBetween(String tahsilatTarihi, String bitisTarihi, Pageable pageable);
+    Page<Tahsilat> findAllByCariIdAndTarihOdeme(Integer cariId, String basTarihi, Pageable pageable);
+    Page<Tahsilat> findAllByTarihOdeme(String basTarihi, Pageable pageable);
+    List<Tahsilat> findAllByTarihOdemeBetween(String basTarihi, String bitisTarihi);
+    Page<Tahsilat> findAllByTarihOdemeBetween(String basTarihi, String bitisTarihi, Pageable pageable);
     List<Tahsilat> findAllByCariIdAndTarihOdemeBetween(Integer cariId, String basTarihi, String bitisTarihi);
     Page<Tahsilat> findAllByCariIdAndTarihOdemeBetween(Integer cariId, String basTarihi, String bitisTarihi, Pageable pageable);
     List<Tahsilat> findAllByCariId(Integer cariId);
-    List<Tahsilat> findAllByTarihOdeme(String tahsilatTarihi);
+    List<Tahsilat> findAllByTarihOdeme(String basTarihi);
 }

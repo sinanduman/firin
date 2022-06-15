@@ -10,12 +10,13 @@
 
 :root {
     --siyah: #000064;
+    --mor: #9C27B0;
+    --koyu-mor: #673AB7;
 }
+
 body {
     background-color: #ffffff !important;
 }
-
-
 
 .icon-red {
     font-weight: bold;
@@ -94,25 +95,25 @@ body {
 
 .border-top-2px {
     border: 0 !important;
-    border-top: 2px solid var(--siyah) !important;
+    border-top: 2px solid var(--mor) !important;
 }
 
 .but-purple {
-    background-color: #9C27B0 !important;
+    background-color: var(--mor) !important;
     color: white !important;
 }
 
 .txt-purple {
-    color: #9C27B0 !important;
+    color: var(--mor) !important;
 }
 
 .but-deep-purple {
-    background-color: #673AB7 !important;
+    background-color: var(--koyu-mor) !important;
     color: white !important;
 }
 
 .txt-deep-purple {
-    color: #673AB7 !important;
+    color: var(--koyu-mor) !important;
 }
 
 .txt-redo {

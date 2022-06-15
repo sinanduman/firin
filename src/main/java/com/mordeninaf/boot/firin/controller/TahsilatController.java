@@ -50,7 +50,7 @@ public class TahsilatController {
         List<Integer> totalPages = IntStream.rangeClosed(0, numberOfPages-1).boxed().collect(Collectors.toList());
 
         List<Cari> cariList = cariService.findAll();
-        Map<Integer, Cari> cariMap = cariList.stream().collect(Collectors.toMap(Cari::getId, Function.identity()));
+        Map<Integer, Cari> cariMap = cariList.stream().collect(Collectors.toConcurrentMap(Cari::getId, Function.identity()));
 
         List<Siparis> onayliSiparisList = siparisService.findAllByOnayIs(1);
         Map<Integer, Double> cariOnayliSiparisMap =  onayliSiparisList.stream().collect(Collectors.groupingBy(Siparis::getCariId, Collectors.summingDouble(this::getSiparisTutar)));
@@ -86,7 +86,7 @@ public class TahsilatController {
         List<Integer> totalPages = IntStream.rangeClosed(0, numberOfPages-1).boxed().collect(Collectors.toList());
 
         List<Cari> cariList = cariService.findAll();
-        Map<Integer, Cari> cariMap = cariList.stream().collect(Collectors.toMap(Cari::getId, Function.identity()));
+        Map<Integer, Cari> cariMap = cariList.stream().collect(Collectors.toConcurrentMap(Cari::getId, Function.identity()));
 
         List<Siparis> onayliSiparisList = siparisService.findAllByOnayIs(1);
         Map<Integer, Double> cariOnayliSiparisMap =  onayliSiparisList.stream().collect(Collectors.groupingBy(Siparis::getCariId, Collectors.summingDouble(this::getSiparisTutar)));

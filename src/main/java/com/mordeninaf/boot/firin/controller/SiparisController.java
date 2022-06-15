@@ -53,8 +53,8 @@ public class SiparisController {
 
         List<Cari> cariList = cariService.findAll();
         List<Urun> urunList = urunService.findAll();
-        Map<Integer, Cari> cariMap = cariList.stream().collect(Collectors.toMap(Cari::getId, Function.identity()));
-        Map<Integer, Urun> urunMap = urunList.stream().collect(Collectors.toMap(Urun::getId, Function.identity()));
+        Map<Integer, Cari> cariMap = cariList.stream().collect(Collectors.toConcurrentMap(Cari::getId, Function.identity()));
+        Map<Integer, Urun> urunMap = urunList.stream().collect(Collectors.toConcurrentMap(Urun::getId, Function.identity()));
         model.addAttribute("siparis", null);
         model.addAttribute("siparisObj", new Siparis());
         model.addAttribute("siparisList", siparisList);
@@ -86,8 +86,8 @@ public class SiparisController {
 
         List<Cari> cariList = cariService.findAll();
         List<Urun> urunList = urunService.findAll();
-        Map<Integer, Cari> cariMap = cariList.stream().collect(Collectors.toMap(Cari::getId, Function.identity()));
-        Map<Integer, Urun> urunMap = urunList.stream().collect(Collectors.toMap(Urun::getId, Function.identity()));
+        Map<Integer, Cari> cariMap = cariList.stream().collect(Collectors.toConcurrentMap(Cari::getId, Function.identity()));
+        Map<Integer, Urun> urunMap = urunList.stream().collect(Collectors.toConcurrentMap(Urun::getId, Function.identity()));
         model.addAttribute("siparis", siparis);
         model.addAttribute("siparisObj", new Siparis());
         model.addAttribute("siparisList", siparisList);

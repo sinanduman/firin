@@ -55,19 +55,19 @@ public class TahsilatService {
         return tahsilatRepository.findAllByCariId(cariId);
     }
 
-    public Page<Tahsilat> findAllByTarih(String tahsilatTarihi, int pageNo, int pageSize, String sortBy) {
+    public Page<Tahsilat> findAllByTarih(String basTarihi, int pageNo, int pageSize, String sortBy) {
         Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).descending());
-        return tahsilatRepository.findAllByTarihOdeme(tahsilatTarihi, paging);
+        return tahsilatRepository.findAllByTarihOdeme(basTarihi, paging);
     }
 
-    public List<Tahsilat> findAllByCariIdAndTarih(Integer cariId, String tahsilatTarihi) {
+    public List<Tahsilat> findAllByCariIdAndTarih(Integer cariId, String basTarihi) {
         /* DEFAULT */
-        if (cariId == 0 && tahsilatTarihi.equals(Parameters.KURULUS_TARIHI)) {
+        if (cariId == 0 && basTarihi.equals(Parameters.KURULUS_TARIHI)) {
             return tahsilatRepository.findAll();
-        } else if (cariId > 0  && tahsilatTarihi.equals(Parameters.KURULUS_TARIHI)) {
+        } else if (cariId > 0  && basTarihi.equals(Parameters.KURULUS_TARIHI)) {
             return tahsilatRepository.findAllByCariId(cariId);
         } else {
-            return tahsilatRepository.findAllByTarihOdeme(tahsilatTarihi);
+            return tahsilatRepository.findAllByTarihOdeme(basTarihi);
         }
     }
 
@@ -88,7 +88,11 @@ public class TahsilatService {
         }
     }
 
-    public Page<Tahsilat> findAllByTarihOdemeWithoutTahsil (Integer cariId, String tahsilatTarihi, Pageable paging) {
+    public List<Tahsilat> findAllByTarihOdemeBetween(String basTarihi, String bitisTarihi) {
+        return tahsilatRepository.findAllByTarihOdemeBetween(basTarihi, bitisTarihi);
+    }
+
+    public Page<Tahsilat> findAllByTarihOdemeWithoutTahsil (Integer cariId, String basTarihi, Pageable paging) {
         String cariSql = "";
         if (cariId > 0)
             cariSql = " AND cari_id = ? ";
@@ -110,8 +114,8 @@ public class TahsilatService {
                 "FROM CARI WHERE id NOT IN (SELECT cari_id FROM TAHSILAT WHERE tarih_odeme = ?)" +
                 ") X LIMIT ? OFFSET ?";
 
-        Integer tahsilatCount = jdbcTemplate.queryForList(countQuery, Integer.class, tahsilatTarihi, tahsilatTarihi).get(0);
-        List<Tahsilat> tahsilatList = jdbcTemplate.query(tahsilQuery,new TahsilatMapper(), tahsilatTarihi, tahsilatTarihi, paging.getPageSize(), paging.getOffset());
+        Integer tahsilatCount = jdbcTemplate.queryForList(countQuery, Integer.class, basTarihi, basTarihi).get(0);
+        List<Tahsilat> tahsilatList = jdbcTemplate.query(tahsilQuery,new TahsilatMapper(), basTarihi, basTarihi, paging.getPageSize(), paging.getOffset());
         return new PageImpl<>(tahsilatList, paging, tahsilatCount);
     }
 

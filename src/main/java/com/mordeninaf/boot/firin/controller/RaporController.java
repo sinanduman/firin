@@ -2,10 +2,7 @@ package com.mordeninaf.boot.firin.controller;
 
 import com.mordeninaf.boot.firin.model.*;
 import com.mordeninaf.boot.firin.service.*;
-import com.mordeninaf.boot.firin.util.DateUtils;
-import com.mordeninaf.boot.firin.util.Parameters;
-import com.mordeninaf.boot.firin.util.TextUtils;
-import com.mordeninaf.boot.firin.util.Type;
+import com.mordeninaf.boot.firin.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -16,9 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -39,7 +35,7 @@ public class RaporController {
                        @RequestParam(name = "tip", defaultValue = "T") String tip,
                        @RequestParam(name = "page", defaultValue = "0") Integer pageNo) {
 
-        String baslangicTarihi = LocalDate.now(ZoneId.systemDefault()).toString();
+        String basTarihi = LocalDate.now(ZoneId.systemDefault()).toString();
         String bitisTarihi = LocalDate.now(ZoneId.systemDefault()).plusDays(1).toString();
 
         Page<Tahsilat> tahsilatPagingList = null;
@@ -48,22 +44,46 @@ public class RaporController {
         Page<Siparis> siparisPagingList = null;
         List<Siparis> siparisList = new ArrayList<>();
 
-        int numberOfPages;
+        List<Borc> borcList = new ArrayList<>();
+        List<Cari> cariList = cariService.findAll();
+        List<Urun> urunList = urunService.findAll();
+
+        int numberOfPages = 1;
 
         if (tip.equals(Type.T.name())) {
-            tahsilatPagingList = tahsilatService.findAllByCariIdAndTarihOdemeBetween(0, baslangicTarihi, bitisTarihi, pageNo, Parameters.PAGE_SIZE, Parameters.SIPARIS_SORT_BY);
+            /* TAHSİLAT */
+            tahsilatPagingList = tahsilatService.findAllByCariIdAndTarihOdemeBetween(0, basTarihi, bitisTarihi, pageNo, Parameters.PAGE_SIZE, Parameters.SIPARIS_SORT_BY);
             tahsilatList = new ArrayList<>(tahsilatPagingList.toList());
             numberOfPages = tahsilatPagingList.getTotalPages() > 0 ? tahsilatPagingList.getTotalPages() : 1;
-        } else {
-            siparisPagingList = siparisService.findAllByCariIdAndTarihBetween(0, baslangicTarihi, bitisTarihi, pageNo, Parameters.PAGE_SIZE, Parameters.SIPARIS_SORT_BY);
+        } else if (tip.equals(Type.S.name())) {
+            /* SİPARİŞ */
+            siparisPagingList = siparisService.findAllByCariIdAndUrunIdAndTarihBetween(0, 0, basTarihi, bitisTarihi, pageNo, Parameters.PAGE_SIZE, Parameters.SIPARIS_SORT_BY);
             siparisList = new ArrayList<>(siparisPagingList.toList());
             numberOfPages = siparisPagingList.getTotalPages() > 0 ? siparisPagingList.getTotalPages() : 1;
+        } else if (tip.equals(Type.B.name())){
+            /* BORÇ */
+            List<Siparis> borcSiparisList;
+            List<Tahsilat> borcTahsilatList;
+            /* cariId = 0*/
+            borcSiparisList = siparisService.findAllByTarihBetween(basTarihi, bitisTarihi);
+            borcTahsilatList = tahsilatService.findAllByTarihOdemeBetween(basTarihi, bitisTarihi);
+            /* CariId -> Toplam */
+            Map<Integer, Double> siparisMapByCariId = borcSiparisList.stream().collect(Collectors.groupingByConcurrent(Siparis::getCariId, Collectors.reducing(0d, Siparis::getTutar, Double::sum)));
+            /* CariId -> Toplam */
+            Map<Integer, Integer> tahsilatMapByCariId = borcTahsilatList.stream().collect(Collectors.groupingByConcurrent(Tahsilat::getCariId, Collectors.reducing(0, Tahsilat::getTutar, Integer::sum)));
+
+            for (Map.Entry<Integer, Double> entry : siparisMapByCariId.entrySet()) {
+                if (tahsilatMapByCariId.get(entry.getKey()) != null) {
+                    siparisMapByCariId.put(entry.getKey(), entry.getValue() - tahsilatMapByCariId.get(entry.getKey()).doubleValue());
+                }
+            }
+
+            numberOfPages = siparisMapByCariId.size() > 0 ? siparisMapByCariId.size() : 1;
         }
 
-        List<Integer> totalPages = IntStream.rangeClosed(0, numberOfPages-1).boxed().collect(Collectors.toList());
+        List<Integer> totalPages = NumberUtils.getTotalPages(numberOfPages);
 
-        List<Cari> cariList = cariService.findAll();
-        Map<Integer, Cari> cariMap = cariList.stream().collect(Collectors.toMap(Cari::getId, Function.identity()));
+        Map<Integer, Cari> cariMap = cariList.stream().collect(Collectors.toConcurrentMap(Cari::getId, Function.identity()));
 
         model.addAttribute("tahsilat", null);
         model.addAttribute("tahsilatObj", new Tahsilat());
@@ -71,9 +91,12 @@ public class RaporController {
         model.addAttribute("siparisList", siparisList);
         model.addAttribute("cariList", cariList);
         model.addAttribute("cariMap", cariMap);
+        model.addAttribute("urunList", urunList);
+        model.addAttribute("borcList", borcList);
         model.addAttribute("tip", tip);
         model.addAttribute("cariId", 0);
-        model.addAttribute("baslangicTarihi", baslangicTarihi);
+        model.addAttribute("urunId", 0);
+        model.addAttribute("basTarihi", basTarihi);
         model.addAttribute("bitisTarihi", bitisTarihi);
         model.addAttribute("pageSize", Parameters.PAGE_SIZE);
         model.addAttribute("pageNo", pageNo);
@@ -87,11 +110,12 @@ public class RaporController {
     public String sorgu(Model model,
                        @RequestParam(name = "tip", defaultValue = "T") String tip,
                        @RequestParam(name = "cariId", defaultValue = "0") Integer cariId,
-                       @RequestParam(name = "baslangicTarihi", defaultValue = "1923-10-29") String baslangicTarihi,
+                       @RequestParam(name = "urunId", defaultValue = "0") Integer urunId,
+                       @RequestParam(name = "basTarihi", defaultValue = "1923-10-29") String basTarihi,
                        @RequestParam(name = "bitisTarihi", defaultValue = "1923-10-29") String bitisTarihi,
                        @RequestParam(name = "page", defaultValue = "0") Integer pageNo) {
 
-        baslangicTarihi = baslangicTarihi.equals(Parameters.KURULUS_TARIHI)? LocalDate.now(ZoneId.systemDefault()).toString() : baslangicTarihi;
+        basTarihi = basTarihi.equals(Parameters.KURULUS_TARIHI)? LocalDate.now(ZoneId.systemDefault()).toString() : basTarihi;
         bitisTarihi = bitisTarihi.equals(Parameters.KURULUS_TARIHI)? LocalDate.now(ZoneId.systemDefault()).toString() : bitisTarihi;
 
         Page<Tahsilat> tahsilatPagingList = null;
@@ -100,33 +124,68 @@ public class RaporController {
         Page<Siparis> siparisPagingList = null;
         List<Siparis> siparisList = new ArrayList<>();
 
-        int numberOfPages;
-
-        if (tip.equals(Type.T.name())) {
-            tahsilatPagingList = tahsilatService.findAllByCariIdAndTarihOdemeBetween(cariId, baslangicTarihi, bitisTarihi, pageNo, Parameters.PAGE_SIZE, Parameters.SIPARIS_SORT_BY);
-            tahsilatList = new ArrayList<>(tahsilatPagingList.toList());
-            numberOfPages = tahsilatPagingList.getTotalPages() > 0 ? tahsilatPagingList.getTotalPages() : 1;
-        } else {
-            siparisPagingList = siparisService.findAllByCariIdAndTarihBetween(cariId, baslangicTarihi, bitisTarihi, pageNo, Parameters.PAGE_SIZE, Parameters.SIPARIS_SORT_BY);
-            siparisList = new ArrayList<>(siparisPagingList.toList());
-            numberOfPages = siparisPagingList.getTotalPages() > 0 ? siparisPagingList.getTotalPages() : 1;
-        }
-
-        List<Integer> totalPages = IntStream.rangeClosed(0, numberOfPages-1).boxed().collect(Collectors.toList());
-
+        List<Borc> borcList = new ArrayList<>();
         List<Cari> cariList = cariService.findAll();
         List<Urun> urunList = urunService.findAll();
-        Map<Integer, Cari> cariMap = cariList.stream().collect(Collectors.toMap(Cari::getId, Function.identity()));
-        Map<Integer, Urun> urunMap = urunList.stream().collect(Collectors.toMap(Urun::getId, Function.identity()));
+
+        Map<Integer, Cari> cariMap = cariList.stream().collect(Collectors.toConcurrentMap(Cari::getId, Function.identity()));
+        Map<Integer, Urun> urunMap = urunList.stream().collect(Collectors.toConcurrentMap(Urun::getId, Function.identity()));
+
+        int numberOfPages = 1;
+
+        if (tip.equals(Type.T.name())) {
+            /* TAHSİLAT */
+            tahsilatPagingList = tahsilatService.findAllByCariIdAndTarihOdemeBetween(cariId, basTarihi, bitisTarihi, pageNo, Parameters.PAGE_SIZE, Parameters.SIPARIS_SORT_BY);
+            tahsilatList = new ArrayList<>(tahsilatPagingList.toList());
+            numberOfPages = tahsilatPagingList.getTotalPages() > 0 ? tahsilatPagingList.getTotalPages() : 1;
+        } else if (tip.equals(Type.S.name())) {
+            /* SİPARİŞ */
+            siparisPagingList = siparisService.findAllByCariIdAndUrunIdAndTarihBetween(cariId, urunId, basTarihi, bitisTarihi, pageNo, Parameters.PAGE_SIZE, Parameters.SIPARIS_SORT_BY);
+            siparisList = new ArrayList<>(siparisPagingList.toList());
+            numberOfPages = siparisPagingList.getTotalPages() > 0 ? siparisPagingList.getTotalPages() : 1;
+        } else if (tip.equals(Type.B.name())){
+            /* BORÇ */
+            List<Siparis> borcSiparisList;
+            List<Tahsilat> borcTahsilatList;
+            if (cariId == 0) {
+                borcSiparisList = siparisService.findAllByTarihBetween(basTarihi, bitisTarihi);
+                borcTahsilatList = tahsilatService.findAllByTarihOdemeBetween(basTarihi, bitisTarihi);
+            } else {
+                borcSiparisList = siparisService.findAllByCariIdAndTarihBetween(cariId, basTarihi, bitisTarihi);
+                borcTahsilatList = tahsilatService.findAllByCariIdAndTarihOdemeBetween(cariId, basTarihi, bitisTarihi);
+            }
+            /* CariId -> Toplam */
+            Map<Integer, Double> siparisMapByCariId = borcSiparisList.stream().collect(Collectors.groupingByConcurrent(Siparis::getCariId, Collectors.reducing(0d, Siparis::getTutar, Double::sum)));
+            /* CariId -> Toplam */
+            Map<Integer, Integer> tahsilatMapByCariId = borcTahsilatList.stream().collect(Collectors.groupingByConcurrent(Tahsilat::getCariId, Collectors.reducing(0, Tahsilat::getTutar, Integer::sum)));
+
+            borcList = new ArrayList<>();
+            for (Map.Entry<Integer, Double> entry : siparisMapByCariId.entrySet()) {
+                if (tahsilatMapByCariId.get(entry.getKey()) != null) {
+                    Integer value = tahsilatMapByCariId.get(entry.getKey());
+                    siparisMapByCariId.put(entry.getKey(), entry.getValue() - value);
+                }
+                borcList.add(new Borc(entry.getKey(), cariMap.get(entry.getKey()).getCariAd(), siparisMapByCariId.get(entry.getKey()), LocalDate.parse(basTarihi, DateTimeFormatter.ISO_LOCAL_DATE)));
+            }
+            borcList.sort(Comparator.comparing(Borc::getCariAd));
+
+            numberOfPages = siparisMapByCariId.size() > 0 ? siparisMapByCariId.size() : 1;
+        }
+
+        List<Integer> totalPages = NumberUtils.getTotalPages(numberOfPages);
+
 
         model.addAttribute("tahsilatList", tahsilatList);
         model.addAttribute("siparisList", siparisList);
         model.addAttribute("cariList", cariList);
         model.addAttribute("cariMap", cariMap);
         model.addAttribute("urunMap", urunMap);
+        model.addAttribute("urunList", urunList);
+        model.addAttribute("borcList", borcList);
         model.addAttribute("tip", tip);
         model.addAttribute("cariId", cariId);
-        model.addAttribute("baslangicTarihi", baslangicTarihi);
+        model.addAttribute("urunId", urunId);
+        model.addAttribute("basTarihi", basTarihi);
         model.addAttribute("bitisTarihi", bitisTarihi);
         model.addAttribute("pageNo", pageNo);
         model.addAttribute("pageSize", Parameters.PAGE_SIZE);
@@ -140,37 +199,60 @@ public class RaporController {
     public String show(Model model,
                         @RequestParam(name = "tip", defaultValue = "T") String tip,
                         @RequestParam(name = "cariId", defaultValue = "0") Integer cariId,
+                        @RequestParam(name = "urunId", defaultValue = "0") Integer urunId,
                         @RequestParam(name = "tarih", defaultValue = "1923-10-29") String basTarihi,
                         @RequestParam(name = "bitis", defaultValue = "1923-10-29") String bitisTarihi,
                         @RequestParam(name = "page", defaultValue = "0") Integer pageNo) {
-        return sorgu(model, tip, cariId, basTarihi, bitisTarihi, pageNo);
+        return sorgu(model, tip, cariId, urunId, basTarihi, bitisTarihi, pageNo);
     }
 
     @GetMapping("/rapor/excel")
     public void download(HttpServletResponse response,
                          @RequestParam(name = "tip", defaultValue = "T") String tip,
                          @RequestParam(name = "cariId", defaultValue = "0") Integer cariId,
-                         @RequestParam(name = "tarih", defaultValue = "1923-10-29") String baslangicTarihi,
+                         @RequestParam(name = "urunId", defaultValue = "0") Integer urunId,
+                         @RequestParam(name = "tarih", defaultValue = "1923-10-29") String basTarihi,
                          @RequestParam(name = "bitis", defaultValue = "1923-10-29") String bitisTarihi) throws IOException {
 
         List<Tahsilat> tahsilatList = new ArrayList<>();
         List<Siparis> siparisList = new ArrayList<>();
 
         if (tip.equals(Type.T.name())) {
-            tahsilatList = tahsilatService.findAllByCariIdAndTarihOdemeBetween(cariId, baslangicTarihi, bitisTarihi);
-        } else {
-            siparisList = siparisService.findAllByCariIdAndTarihBetween(cariId, baslangicTarihi, bitisTarihi);
+            tahsilatList = tahsilatService.findAllByCariIdAndTarihOdemeBetween(cariId, basTarihi, bitisTarihi);
+        } else if (tip.equals(Type.S.name())) {
+            siparisList = siparisService.findAllByCariIdAndTarihBetween(cariId, basTarihi, bitisTarihi);
+        } else if (tip.equals(Type.B.name())) {
+            List<Siparis> borcSiparisList;
+            List<Tahsilat> borcTahsilatList;
+            if (cariId == 0) {
+                borcSiparisList = siparisService.findAllByTarihBetween(basTarihi, bitisTarihi);
+                borcTahsilatList = tahsilatService.findAllByTarihOdemeBetween(basTarihi, bitisTarihi);
+            } else {
+                borcSiparisList = siparisService.findAllByCariIdAndTarihBetween(cariId, basTarihi, bitisTarihi);
+                borcTahsilatList = tahsilatService.findAllByCariIdAndTarihOdemeBetween(cariId, basTarihi, bitisTarihi);
+            }
+            /* CariId -> Toplam */
+            Map<Integer, Double> siparisMapByCariId = borcSiparisList.stream().collect(Collectors.groupingByConcurrent(Siparis::getCariId, Collectors.reducing(0d, Siparis::getTutar, Double::sum)));
+            /* CariId -> Toplam */
+            Map<Integer, Integer> tahsilatMapByCariId = borcTahsilatList.stream().collect(Collectors.groupingByConcurrent(Tahsilat::getCariId, Collectors.reducing(0, Tahsilat::getTutar, Integer::sum)));
+
+            for (Map.Entry<Integer, Double> entry : siparisMapByCariId.entrySet()) {
+                if (tahsilatMapByCariId.get(entry.getKey()) != null) {
+                    siparisMapByCariId.put(entry.getKey(), entry.getValue() - tahsilatMapByCariId.get(entry.getKey()).doubleValue());
+                }
+            }
+
         }
 
         List<Cari> cariList = cariService.findAll();
         List<Urun> urunList = urunService.findAll();
-        Map<Integer, Cari> cariMap = cariList.stream().collect(Collectors.toMap(Cari::getId, Function.identity()));
-        Map<Integer, Urun> urunMap = urunList.stream().collect(Collectors.toMap(Urun::getId, Function.identity()));
+        Map<Integer, Cari> cariMap = cariList.stream().collect(Collectors.toConcurrentMap(Cari::getId, Function.identity()));
+        Map<Integer, Urun> urunMap = urunList.stream().collect(Collectors.toConcurrentMap(Urun::getId, Function.identity()));
 
         List<Rapor> raporList = mergeTahsilatSiparisCari(tahsilatList, siparisList, cariMap, urunMap);
 
         String cariAd = (cariId == 0) ? "tum" : cariMap.get(cariId).getCariAd();
-        ExcelGenerator generator = new ExcelGenerator(raporList, tip.equals(Type.T.name()) ? Type.T : Type.S, cariAd, baslangicTarihi, bitisTarihi);
+        ExcelGenerator generator = new ExcelGenerator(raporList, tip.equals(Type.T.name()) ? Type.T : Type.S, cariAd, basTarihi, bitisTarihi);
         generator.generate(response);
     }
 
@@ -200,7 +282,7 @@ public class RaporController {
         for (Siparis siparis : siparisList) {
             Rapor rapor = new Rapor();
             rapor.setTutar(siparis.getTutar());
-            rapor.setKayitTarihi(DateUtils.toTurkishDateTime(siparis.getTarih()));
+            rapor.setKayitTarihi(siparis.getTarihSiparis());
             rapor.setCariAd(cariMap.get(siparis.getCariId()).getCariAd());
             rapor.setUrunAd(urunMap.get(siparis.getUrunId()).getUrunAd());
             rapor.setAdet(siparis.getAdet());
