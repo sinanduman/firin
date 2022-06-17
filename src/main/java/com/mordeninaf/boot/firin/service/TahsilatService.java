@@ -1,5 +1,6 @@
 package com.mordeninaf.boot.firin.service;
 
+import com.mordeninaf.boot.firin.model.Borc;
 import com.mordeninaf.boot.firin.model.Tahsilat;
 import com.mordeninaf.boot.firin.repository.TahsilatRepository;
 import com.mordeninaf.boot.firin.util.Parameters;
@@ -117,6 +118,10 @@ public class TahsilatService {
         Integer tahsilatCount = jdbcTemplate.queryForList(countQuery, Integer.class, basTarihi, basTarihi).get(0);
         List<Tahsilat> tahsilatList = jdbcTemplate.query(tahsilQuery,new TahsilatMapper(), basTarihi, basTarihi, paging.getPageSize(), paging.getOffset());
         return new PageImpl<>(tahsilatList, paging, tahsilatCount);
+    }
+
+    public Page<Borc> getPaginatedBorcList(List<Borc> borcList, Integer pageNo, int pageSize, String borcSortBy) {
+        return new PageImpl<>(borcList, PageRequest.of(pageNo, pageSize, Sort.by(borcSortBy)), borcList.size());
     }
 
     public static class TahsilatMapper implements RowMapper<Tahsilat> {

@@ -124,7 +124,9 @@ public class RaporController {
         Page<Siparis> siparisPagingList = null;
         List<Siparis> siparisList = new ArrayList<>();
 
+        Page<Borc> borcPagingList = null;
         List<Borc> borcList = new ArrayList<>();
+
         List<Cari> cariList = cariService.findAll();
         List<Urun> urunList = urunService.findAll();
 
@@ -167,11 +169,9 @@ public class RaporController {
                 }
                 borcList.add(new Borc(entry.getKey(), cariMap.get(entry.getKey()).getCariAd(), siparisMapByCariId.get(entry.getKey()), LocalDate.parse(basTarihi, DateTimeFormatter.ISO_LOCAL_DATE)));
             }
-            borcList.sort(Comparator.comparing(Borc::getCariAd));
-
-            /* Tüm Tahsilat tek sayfada
-             * numberOfPages = 1;
-             * */
+            borcPagingList = tahsilatService.getPaginatedBorcList(borcList, pageNo, Parameters.PAGE_SIZE, Parameters.BORC_SORT_BY);
+            borcList = new ArrayList<>(borcPagingList.toList());
+            numberOfPages = borcPagingList.getTotalPages() > 0 ? borcPagingList.getTotalPages() : 1;
         }
         List<Integer> totalPages = NumberUtils.getTotalPages(numberOfPages);
 
