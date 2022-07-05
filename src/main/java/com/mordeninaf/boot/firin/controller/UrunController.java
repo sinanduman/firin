@@ -8,10 +8,10 @@ import com.mordeninaf.boot.firin.service.SiparisService;
 import com.mordeninaf.boot.firin.service.UrunService;
 import com.mordeninaf.boot.firin.util.DateUtils;
 import com.mordeninaf.boot.firin.util.TextUtils;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,37 +24,27 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Controller
 public class UrunController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UrunController.class);
 
-    @Autowired
-    private UrunService urunService;
-    @Autowired
-    private SiparisService siparisService;
-    @Autowired
-    private CariService cariService;
+    private final UrunService urunService;
+    private final SiparisService siparisService;
+    private final CariService cariService;
 
     @GetMapping("/urun")
     public String main(Model model) {
-        List<Urun> urunList = urunService.findAll();
-        Map<Integer, Cari> cariMap = cariService.findAll().stream().filter(c -> c.getAktif() == 1).collect(Collectors.toConcurrentMap(Cari::getId, Function.identity()));
-        model.addAttribute("urun", null);
-        model.addAttribute("urunObj", new Urun());
-        model.addAttribute("urunlist", urunList);
-        model.addAttribute("cariId", 0);
-        model.addAttribute("cariMap", cariMap);
-        model.addAttribute("dateUtils", DateUtils.class);
-        model.addAttribute("textUtils", TextUtils.class);
-        return "urun";
+        return show(model, 0, 0);
     }
 
     @RequestMapping(value = "/urun/show", method = {RequestMethod.GET, RequestMethod.POST})
     public String show(Model model,
                        @RequestParam(name = "id") Integer id,
                        @RequestParam(name = "cariId") Integer cariId) {
-        Urun urun = urunService.findById(id);
+
+        Urun urun = (id == 0) ? null : urunService.findById(id);
         List<Urun> urunList = urunService.findAll();
         Map<Integer, Cari> cariMap = cariService.findAll().stream().filter(c -> c.getAktif() == 1).collect(Collectors.toConcurrentMap(Cari::getId, Function.identity()));
         model.addAttribute("urun", urun);

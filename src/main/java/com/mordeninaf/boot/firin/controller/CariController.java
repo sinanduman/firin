@@ -7,10 +7,10 @@ import com.mordeninaf.boot.firin.service.CariService;
 import com.mordeninaf.boot.firin.service.SiparisService;
 import com.mordeninaf.boot.firin.service.TahsilatService;
 import com.mordeninaf.boot.firin.util.TextUtils;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -20,37 +20,28 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 
+@RequiredArgsConstructor
 @Controller
 public class CariController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CariController.class);
 
-    @Autowired
-    private CariService cariService;
-
-    @Autowired
-    private SiparisService siparisService;
-
-    @Autowired
-    private TahsilatService tahsilatService;
+    private final CariService cariService;
+    private final SiparisService siparisService;
+    private final TahsilatService tahsilatService;
 
     @GetMapping("/cari")
     public String main(Model model) {
-        List<Cari> cariList = cariService.findAll();
-        model.addAttribute("cari", null);
-        model.addAttribute("cariObj", new Cari());
-        model.addAttribute("carilist", cariList);
-        model.addAttribute("textUtils", TextUtils.class);
-        return "cari";
+        return show(model, 0);
     }
 
     @RequestMapping(value = "/cari/show", method = {RequestMethod.GET, RequestMethod.POST})
     public String show(Model model,
-                       @RequestParam(name = "id") Integer id) {
-        Cari cari = cariService.findById(id);
+                       @RequestParam(name = "id", defaultValue = "0") Integer id) {
+        Cari cari = (id == 0) ? null: cariService.findById(id);
         List<Cari> cariList = cariService.findAll();
         model.addAttribute("cari", cari);
-        model.addAttribute("carilist", cariList);
+        model.addAttribute("cariList", cariList);
         model.addAttribute("cariObj", new Cari());
         model.addAttribute("textUtils", TextUtils.class);
         return "cari";

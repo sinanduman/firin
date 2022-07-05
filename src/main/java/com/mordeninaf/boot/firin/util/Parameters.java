@@ -3,6 +3,9 @@ package com.mordeninaf.boot.firin.util;
 import java.time.LocalDate;
 
 public class Parameters {
+
+    private Parameters() {}
+
     public static final int PAGE_SIZE = 15;
     public static final int TRUNC_ADRES = 20;
     public static final String TL_CURRENCY_SYMBOL = "₺";

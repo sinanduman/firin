@@ -6,7 +6,6 @@ import com.mordeninaf.boot.firin.repository.CariRepository;
 import com.mordeninaf.boot.firin.repository.UrunRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,7 +16,6 @@ import java.util.List;
 @SpringBootApplication
 public class FirinApplication {
 
-    @Autowired
     private static final Logger LOGGER = LoggerFactory.getLogger(FirinApplication.class);
 
     public static void main(String[] args) {
@@ -26,7 +24,7 @@ public class FirinApplication {
 
     @Bean
     public CommandLineRunner loadUrunData(UrunRepository urunRepository) {
-        return (args) -> {
+        return args -> {
             List<Urun> urunList = urunRepository.findAll();
             if (urunList.isEmpty()) {
                 urunRepository.save(new Urun("KÜÇÜK TAVA"));
@@ -47,7 +45,7 @@ public class FirinApplication {
 
     @Bean
     public CommandLineRunner loadCariData(CariRepository cariRepository) {
-        return (args) -> {
+        return args -> {
             List<Cari> cariList = cariRepository.findAll();
             if (cariList.isEmpty()) {
                 cariRepository.save(new Cari("ADİL", "", ""));

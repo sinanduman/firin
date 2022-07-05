@@ -4,14 +4,15 @@ import com.mordeninaf.boot.firin.model.Borc;
 import com.mordeninaf.boot.firin.model.Tahsilat;
 import com.mordeninaf.boot.firin.repository.TahsilatRepository;
 import com.mordeninaf.boot.firin.util.Parameters;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,16 +23,15 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @Service
 public class TahsilatService {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(TahsilatService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TahsilatService.class);
 
-    @Autowired
-    private TahsilatRepository tahsilatRepository;
+    private final TahsilatRepository tahsilatRepository;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     public Tahsilat findById(Integer id) {
         Optional<Tahsilat> tahsilat = tahsilatRepository.findById(id);
@@ -93,11 +93,7 @@ public class TahsilatService {
         return tahsilatRepository.findAllByTarihOdemeBetween(basTarihi, bitisTarihi);
     }
 
-    public Page<Tahsilat> findAllByTarihOdemeWithoutTahsil (Integer cariId, String basTarihi, Pageable paging) {
-        String cariSql = "";
-        if (cariId > 0)
-            cariSql = " AND cari_id = ? ";
-        cariSql = " ";
+    public Page<Tahsilat> findAllByTarihOdemeWithoutTahsilat(String basTarihi, Pageable paging) {
 
         final String countQuery = "SELECT count(*) FROM " +
                 "(SELECT id, cari_id, tutar, tarih_odeme, tarih " +
@@ -107,7 +103,7 @@ public class TahsilatService {
                 "FROM CARI WHERE id NOT IN (SELECT cari_id FROM TAHSILAT WHERE tarih_odeme = ?)" +
                 ") ";
 
-        final String tahsilQuery = "SELECT * FROM " +
+        final String tahsilatQuery = "SELECT * FROM " +
                 "(SELECT id, cari_id, tutar, tarih_odeme, tarih " +
                 "FROM TAHSILAT WHERE tarih_odeme = ? " +
                 "UNION " +
@@ -116,7 +112,7 @@ public class TahsilatService {
                 ") X LIMIT ? OFFSET ?";
 
         Integer tahsilatCount = jdbcTemplate.queryForList(countQuery, Integer.class, basTarihi, basTarihi).get(0);
-        List<Tahsilat> tahsilatList = jdbcTemplate.query(tahsilQuery,new TahsilatMapper(), basTarihi, basTarihi, paging.getPageSize(), paging.getOffset());
+        List<Tahsilat> tahsilatList = jdbcTemplate.query(tahsilatQuery,new TahsilatMapper(), basTarihi, basTarihi, paging.getPageSize(), paging.getOffset());
         return new PageImpl<>(tahsilatList, paging, tahsilatCount);
     }
 
@@ -146,10 +142,12 @@ public class TahsilatService {
         }
     }
 
+    @Transactional
     public Tahsilat save(Tahsilat tahsilat) {
         return tahsilatRepository.save(tahsilat);
     }
 
+    @Transactional
     public String remove(Tahsilat tahsilat) {
         try {
             tahsilatRepository.delete(tahsilat);

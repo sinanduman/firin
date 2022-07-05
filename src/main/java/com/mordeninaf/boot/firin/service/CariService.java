@@ -2,22 +2,23 @@ package com.mordeninaf.boot.firin.service;
 
 import com.mordeninaf.boot.firin.model.Cari;
 import com.mordeninaf.boot.firin.repository.CariRepository;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @Service
 public class CariService {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(CariService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CariService.class);
 
-    @Autowired
-    private CariRepository cariRepository;
+    private final CariRepository cariRepository;
 
     public Cari findById(Integer id) {
         Optional<Cari> cari = cariRepository.findById(id);
@@ -28,10 +29,12 @@ public class CariService {
         return cariRepository.findAll();
     }
 
+    @Transactional
     public Cari save(Cari cari) {
         return cariRepository.save(cari);
     }
 
+    @Transactional
     public String remove(Cari cari) {
         try {
             cariRepository.delete(cari);

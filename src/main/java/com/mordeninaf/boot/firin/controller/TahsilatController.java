@@ -9,9 +9,9 @@ import com.mordeninaf.boot.firin.service.TahsilatService;
 import com.mordeninaf.boot.firin.util.DateUtils;
 import com.mordeninaf.boot.firin.util.Parameters;
 import com.mordeninaf.boot.firin.util.TextUtils;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,56 +27,27 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+@RequiredArgsConstructor
 @Controller
 public class TahsilatController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TahsilatController.class);
-    @Autowired
-    private TahsilatService tahsilatService;
-    @Autowired
-    private CariService cariService;
-    @Autowired
-    private SiparisService siparisService;
+    private final TahsilatService tahsilatService;
+    private final CariService cariService;
+    private final SiparisService siparisService;
 
     @GetMapping("/tahsilat")
     public String main(Model model,
+                       @RequestParam(name = "id", defaultValue = "0") Integer id,
                        @RequestParam(name = "page", defaultValue = "0") Integer pageNo) {
-
-        Page<Tahsilat> tahsilatPagingList = tahsilatService.findAll(pageNo, Parameters.PAGE_SIZE, Parameters.SIPARIS_SORT_BY);
-        List<Tahsilat> tahsilatList = new ArrayList<>(tahsilatPagingList.toList());
-        List<Tahsilat> tahsilatListAll = tahsilatService.findAll();
-        int numberOfPages = tahsilatPagingList.getTotalPages() > 0 ? tahsilatPagingList.getTotalPages() : 1;
-
-        List<Integer> totalPages = IntStream.rangeClosed(0, numberOfPages-1).boxed().collect(Collectors.toList());
-
-        List<Cari> cariList = cariService.findAll();
-        Map<Integer, Cari> cariMap = cariList.stream().collect(Collectors.toConcurrentMap(Cari::getId, Function.identity()));
-
-        List<Siparis> onayliSiparisList = siparisService.findAllByOnayIs(1);
-        Map<Integer, Double> cariOnayliSiparisMap =  onayliSiparisList.stream().collect(Collectors.groupingBy(Siparis::getCariId, Collectors.summingDouble(this::getSiparisTutar)));
-        Map<Integer, Double> cariTahsilatMap = tahsilatListAll.stream().collect(Collectors.groupingBy(Tahsilat::getCariId, Collectors.summingDouble(Tahsilat::getTutar)));
-
-        mahsuplasSiparisTahsilat(cariOnayliSiparisMap, cariTahsilatMap);
-
-        model.addAttribute("tahsilat", null);
-        model.addAttribute("tahsilatObj", new Tahsilat());
-        model.addAttribute("tahsilatList", tahsilatList);
-        model.addAttribute("cariOnayliSiparisMap", cariOnayliSiparisMap);
-        model.addAttribute("cariList", cariList);
-        model.addAttribute("cariMap", cariMap);
-        model.addAttribute("pageNo", pageNo);
-        model.addAttribute("pageSize", Parameters.PAGE_SIZE);
-        model.addAttribute("totalPages", totalPages);
-        model.addAttribute("dateUtils", DateUtils.class);
-        model.addAttribute("textUtils", TextUtils.class);
-        return "tahsilat";
+        return show(model, id, pageNo);
     }
 
     @PostMapping(value = "/tahsilat/show")
     public String show(Model model,
-                       @RequestParam(name = "id") Integer id,
+                       @RequestParam(name = "id", defaultValue = "0") Integer id,
                        @RequestParam(name = "page", defaultValue = "0") Integer pageNo) {
-        Tahsilat tahsilat = tahsilatService.findById(id);
+        Tahsilat tahsilat = (id == 0) ? null : tahsilatService.findById(id);
 
         Page<Tahsilat> tahsilatPagingList = tahsilatService.findAll(pageNo, Parameters.PAGE_SIZE, Parameters.SIPARIS_SORT_BY);
         List<Tahsilat> tahsilatList = new ArrayList<>(tahsilatPagingList.toList());
@@ -112,7 +83,7 @@ public class TahsilatController {
     public String save(Model model, RedirectAttributes redirAttrs,
                        @ModelAttribute Tahsilat tahsilatObj,
                        @RequestParam(name = "page", defaultValue = "0") Integer pageNo) {
-        if (tahsilatObj != null && !(tahsilatObj.getCariId() == null)) {
+        if (tahsilatObj != null && tahsilatObj.getCariId() != null) {
             if (tahsilatObj.getId() != null) {
                 Tahsilat tahsilat = tahsilatService.findById(tahsilatObj.getId());
                 tahsilatObj.setTarih(tahsilat.getTarih() != null ? tahsilat.getTarih() : LocalDateTime.now(ZoneId.systemDefault()));

@@ -11,5 +11,5 @@ import java.lang.annotation.*;
 @Documented
 @Component
 public @interface CanPass {
-    Yetki[] value() default Yetki.Read;
+    Yetki[] value() default Yetki.READ;
 }

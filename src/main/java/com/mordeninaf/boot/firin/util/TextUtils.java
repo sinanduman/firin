@@ -6,6 +6,8 @@ import java.util.Locale;
 public class TextUtils {
     private static final String TURKISH_CURRENCY_SYMBOL = "₺";
 
+    private TextUtils() {}
+
     public static String truncZeroFromPrice(Double price) {
         if (price == null)
             return "";
@@ -32,6 +34,6 @@ public class TextUtils {
         NumberFormat numberFormat = NumberFormat.getInstance(new Locale("tr_TR"));
         numberFormat.setMaximumFractionDigits(1);
         String tmpResult = String.format("%s %s",TURKISH_CURRENCY_SYMBOL, numberFormat.format(num));
-        return String.format("%7s", tmpResult).replaceAll(" ", "\u00A0");
+        return String.format("%7s", tmpResult).replace(" ", "\u00A0");
     }
 }

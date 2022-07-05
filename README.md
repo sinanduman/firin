@@ -16,7 +16,7 @@ Fırının ürettiği hamurişi yiyecekleri, ekleyeceği, güncelleyecği ekran.
 ### Sipariş
 Satış işleminin yapıldığı ekran. Hangi üründen, kime, ne zaman, kaç adet sipariş alındı? Sipariş onaylandı mı?
 > - Sipariş'te, Satış da olabilir İade de.  
-> - Ekmek tarzı ürünlerden, gün sonunda satılmayanların, ertesi gün **İade** olarak şiparişi girilir. Böylelikle satılmayan ürünler, siparişten düşülür.  
+> - Ekmek ve benzeri ürünlerden, gün sonunda satılmayanların, ertesi gün **İade** olarak şiparişi girilir. Böylelikle satılmayan ürünler, siparişten düşülür.  
 > - Sipariş onaylı da girilebilir, onaysız da. Müşteri siparişten vazgeçtiğinde onaysız sipariş kolayca silinebilir.  
 > - Önceki borçlar __ DEVİR __ ve SATIŞ işlemi olarak girilebilir. Fiyatı 1TL belirlenmiştir, değiştirilebilir. 1000TL borç devir edilmişse, __ DEVİR __ ürününden 1000 adet onaylı sipariş işlemi girmelisiniz.
 
@@ -24,7 +24,7 @@ Satış işleminin yapıldığı ekran. Hangi üründen, kime, ne zaman, kaç ad
 Yapılan satışlar için alınan ödemelerin kaydının tutulduğu ekran.
 > - Verilen sipariş kadar, tahsilat yapılması beklense de, daha az bir miktarın tahsilatı da yapılabilir.  
 > - Cari kısımdan ANLIK BORÇ bilgisi gösterilerek, borç girişi kolaylaştırılmıştır.  
-> - ANLIK BORÇ'ta, Onaylanmış Sipariş'ten doğan borş dikkate alınmaktadır.
+> - ANLIK BORÇ'ta, Onaylanmış Sipariş'ten doğan borç dikkate alınmaktadır.
 
 ### Rapor
 Üç adet rapor tipi bulunmaktadır. **Tahsilat Raporu**, **Sipariş Raporu** ve **Borç Raporu**

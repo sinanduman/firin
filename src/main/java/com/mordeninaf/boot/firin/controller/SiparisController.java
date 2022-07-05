@@ -9,10 +9,10 @@ import com.mordeninaf.boot.firin.service.UrunService;
 import com.mordeninaf.boot.firin.util.DateUtils;
 import com.mordeninaf.boot.firin.util.Parameters;
 import com.mordeninaf.boot.firin.util.TextUtils;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,53 +28,27 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+@RequiredArgsConstructor
 @Controller
 public class SiparisController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SiparisController.class);
-    @Autowired
-    private SiparisService siparisService;
-    @Autowired
-    private CariService cariService;
-    @Autowired
-    private UrunService urunService;
+    private final SiparisService siparisService;
+    private final CariService cariService;
+    private final UrunService urunService;
 
     @GetMapping("/siparis")
     public String main(Model model,
+                       @RequestParam(name = "id", defaultValue = "0") Integer id,
                        @RequestParam(name = "page", defaultValue = "0") Integer pageNo) {
-
-        Page<Siparis> siparisPagingList = siparisService.findAll(pageNo, Parameters.PAGE_SIZE, Parameters.SIPARIS_SORT_BY);
-        List<Siparis> siparisList = new ArrayList<>(siparisPagingList.toList());
-        int numberOfPages = siparisPagingList.getTotalPages() > 0 ? siparisPagingList.getTotalPages() : 1;
-
-        List<Integer> totalPages = IntStream.rangeClosed(0, numberOfPages-1)
-                .boxed()
-                .collect(Collectors.toList());
-
-        List<Cari> cariList = cariService.findAll();
-        List<Urun> urunList = urunService.findAll();
-        Map<Integer, Cari> cariMap = cariList.stream().collect(Collectors.toConcurrentMap(Cari::getId, Function.identity()));
-        Map<Integer, Urun> urunMap = urunList.stream().collect(Collectors.toConcurrentMap(Urun::getId, Function.identity()));
-        model.addAttribute("siparis", null);
-        model.addAttribute("siparisObj", new Siparis());
-        model.addAttribute("siparisList", siparisList);
-        model.addAttribute("cariList", cariList);
-        model.addAttribute("urunList", urunList);
-        model.addAttribute("cariMap", cariMap);
-        model.addAttribute("urunMap", urunMap);
-        model.addAttribute("pageNo", pageNo);
-        model.addAttribute("pageSize", Parameters.PAGE_SIZE);
-        model.addAttribute("totalPages", totalPages);
-        model.addAttribute("dateUtils", DateUtils.class);
-        model.addAttribute("textUtils", TextUtils.class);
-        return "siparis";
+        return show(model, id, pageNo);
     }
 
     @PostMapping(value = "/siparis/show")
     public String show(Model model,
-                       @RequestParam(name = "id") Integer id,
+                       @RequestParam(name = "id", defaultValue = "0") Integer id,
                        @RequestParam(name = "page", defaultValue = "0") Integer pageNo) {
-        Siparis siparis = siparisService.findById(id);
+        Siparis siparis = (id == 0) ? null : siparisService.findById(id);
 
         Page<Siparis> siparisPagingList = siparisService.findAll(pageNo, Parameters.PAGE_SIZE, Parameters.SIPARIS_SORT_BY);
         List<Siparis> siparisList = new ArrayList<>(siparisPagingList.toList());

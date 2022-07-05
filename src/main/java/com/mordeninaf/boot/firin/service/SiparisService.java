@@ -2,27 +2,28 @@ package com.mordeninaf.boot.firin.service;
 
 import com.mordeninaf.boot.firin.model.Siparis;
 import com.mordeninaf.boot.firin.repository.SiparisRepository;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @Service
 public class SiparisService {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(SiparisService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SiparisService.class);
 
-    @Autowired
-    private SiparisRepository siparisRepository;
+    private final SiparisRepository siparisRepository;
 
     public Siparis findById(Integer id) {
         Optional<Siparis> siparis = siparisRepository.findById(id);
@@ -97,10 +98,12 @@ public class SiparisService {
         return siparisRepository.findAllByUrunId(urunId);
     }
 
+    @Transactional
     public Siparis save(Siparis siparis) {
         return siparisRepository.save(siparis);
     }
 
+    @Transactional
     public String remove(Siparis siparis) {
         try {
             siparisRepository.delete(siparis);

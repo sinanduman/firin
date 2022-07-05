@@ -1,7 +1,6 @@
 package com.mordeninaf.boot.firin.service;
 
 import com.mordeninaf.boot.firin.model.Rapor;
-import com.mordeninaf.boot.firin.util.Parameters;
 import com.mordeninaf.boot.firin.util.Type;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -105,29 +104,29 @@ public class ExcelGenerator {
         cellStyleRight.setFont(font);
         cellStyleRight.setAlignment(HorizontalAlignment.RIGHT);
 
-        for (Rapor record : listRecords) {
+        for (Rapor rapor : listRecords) {
             Row row = sheet.createRow(++rowCount);
             int columnCount = 0;
 
             if (raporTipi == Type.T) {
                 createCell(row, columnCount++, rowCount, style);
-                createCell(row, columnCount++, record.getCariAd(), style);
-                createCell(row, columnCount++, record.getTutar(), cellStyleRight);
-                createCell(row, columnCount++, record.getOdemeTarihi(), cellStyleRight);
-                createCell(row, columnCount, record.getKayitTarihi(), cellStyleRight);
+                createCell(row, columnCount++, rapor.getCariAd(), style);
+                createCell(row, columnCount++, rapor.getTutar(), cellStyleRight);
+                createCell(row, columnCount++, rapor.getOdemeTarihi(), cellStyleRight);
+                createCell(row, columnCount, rapor.getKayitTarihi(), cellStyleRight);
             } else if (raporTipi == Type.S) {
                 createCell(row, columnCount++, rowCount, style);
-                createCell(row, columnCount++, record.getCariAd(), style);
-                createCell(row, columnCount++, record.getUrunAd(), style);
-                createCell(row, columnCount++, record.getAdet(), cellStyleRight);
-                createCell(row, columnCount++, record.getTutar(), cellStyleRight);
-                createCell(row, columnCount++, record.getSatisIade(), style);
-                createCell(row, columnCount, record.getKayitTarihi(), cellStyleRight);
+                createCell(row, columnCount++, rapor.getCariAd(), style);
+                createCell(row, columnCount++, rapor.getUrunAd(), style);
+                createCell(row, columnCount++, rapor.getAdet(), cellStyleRight);
+                createCell(row, columnCount++, rapor.getTutar(), cellStyleRight);
+                createCell(row, columnCount++, rapor.getSatisIade(), style);
+                createCell(row, columnCount, rapor.getKayitTarihi(), cellStyleRight);
             } else if (raporTipi == Type.B) {
                 createCell(row, columnCount++, rowCount, style);
-                createCell(row, columnCount++, record.getCariAd(), style);
-                createCell(row, columnCount++, record.getTutar(), cellStyleRight);
-                createCell(row, columnCount, record.getKayitTarihi(), cellStyleRight);
+                createCell(row, columnCount++, rapor.getCariAd(), style);
+                createCell(row, columnCount++, rapor.getTutar(), cellStyleRight);
+                createCell(row, columnCount, rapor.getKayitTarihi(), cellStyleRight);
             }
         }
     }
@@ -135,12 +134,7 @@ public class ExcelGenerator {
     public void generate(HttpServletResponse response) throws IOException {
         writeHeader();
         write();
-        /*
-        ServletOutputStream outputStream = response.getOutputStream();
-        workbook.write(outputStream);
-        workbook.close();
-        outputStream.close();
-        */
+
         ByteArrayOutputStream outByteStream = new ByteArrayOutputStream();
         workbook.write(outByteStream);
         byte [] outArray = outByteStream.toByteArray();

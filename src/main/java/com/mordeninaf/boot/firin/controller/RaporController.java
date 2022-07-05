@@ -3,7 +3,7 @@ package com.mordeninaf.boot.firin.controller;
 import com.mordeninaf.boot.firin.model.*;
 import com.mordeninaf.boot.firin.service.*;
 import com.mordeninaf.boot.firin.util.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,16 +19,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Controller
 public class RaporController {
-    @Autowired
-    private TahsilatService tahsilatService;
-    @Autowired
-    private CariService cariService;
-    @Autowired
-    private SiparisService siparisService;
-    @Autowired
-    private UrunService urunService;
+
+    private final TahsilatService tahsilatService;
+    private final CariService cariService;
+    private final SiparisService siparisService;
+    private final UrunService urunService;
 
     @GetMapping("/rapor")
     public String main(Model model,
@@ -115,8 +113,11 @@ public class RaporController {
                        @RequestParam(name = "bitisTarihi", defaultValue = "1923-10-29") String bitisTarihi,
                        @RequestParam(name = "page", defaultValue = "0") Integer pageNo) {
 
-        basTarihi = basTarihi.equals(Parameters.KURULUS_TARIHI)? LocalDate.now(ZoneId.systemDefault()).toString() : basTarihi;
-        bitisTarihi = bitisTarihi.equals(Parameters.KURULUS_TARIHI)? LocalDate.now(ZoneId.systemDefault()).toString() : bitisTarihi;
+        if (basTarihi.equals(Parameters.KURULUS_TARIHI))
+            basTarihi = LocalDate.now(ZoneId.systemDefault()).toString();
+
+        if(bitisTarihi.equals(Parameters.KURULUS_TARIHI))
+            bitisTarihi = LocalDate.now(ZoneId.systemDefault()).toString();
 
         Page<Tahsilat> tahsilatPagingList = null;
         List<Tahsilat> tahsilatList = new ArrayList<>();
@@ -139,23 +140,18 @@ public class RaporController {
             /* TAHSİLAT */
             tahsilatPagingList = tahsilatService.findAllByCariIdAndTarihOdemeBetween(cariId, basTarihi, bitisTarihi, pageNo, Parameters.PAGE_SIZE, Parameters.SIPARIS_SORT_BY);
             tahsilatList = new ArrayList<>(tahsilatPagingList.toList());
-            numberOfPages = tahsilatPagingList.getTotalPages() > 0 ? tahsilatPagingList.getTotalPages() : 1;
+            numberOfPages = tahsilatPagingList.getTotalPages();
         } else if (tip.equals(Type.S.name())) {
             /* SİPARİŞ */
             siparisPagingList = siparisService.findAllByCariIdAndUrunIdAndTarihBetween(cariId, urunId, basTarihi, bitisTarihi, pageNo, Parameters.PAGE_SIZE, Parameters.SIPARIS_SORT_BY);
             siparisList = new ArrayList<>(siparisPagingList.toList());
-            numberOfPages = siparisPagingList.getTotalPages() > 0 ? siparisPagingList.getTotalPages() : 1;
+            numberOfPages = siparisPagingList.getTotalPages();
         } else if (tip.equals(Type.B.name())){
             /* BORÇ */
             List<Siparis> borcSiparisList;
             List<Tahsilat> borcTahsilatList;
-            if (cariId == 0) {
-                borcSiparisList = siparisService.findAllByTarihBetween(basTarihi, bitisTarihi);
-                borcTahsilatList = tahsilatService.findAllByTarihOdemeBetween(basTarihi, bitisTarihi);
-            } else {
-                borcSiparisList = siparisService.findAllByCariIdAndTarihBetween(cariId, basTarihi, bitisTarihi);
-                borcTahsilatList = tahsilatService.findAllByCariIdAndTarihOdemeBetween(cariId, basTarihi, bitisTarihi);
-            }
+            borcSiparisList = siparisService.findAllByCariIdAndTarihBetween(cariId, basTarihi, bitisTarihi);
+            borcTahsilatList = tahsilatService.findAllByCariIdAndTarihOdemeBetween(cariId, basTarihi, bitisTarihi);
             /* CariId -> Toplam */
             Map<Integer, Double> siparisMapByCariId = borcSiparisList.stream().collect(Collectors.groupingByConcurrent(Siparis::getCariId, Collectors.reducing(0d, Siparis::getTutar, Double::sum)));
             /* CariId -> Toplam */
@@ -171,7 +167,7 @@ public class RaporController {
             }
             borcPagingList = tahsilatService.getPaginatedBorcList(borcList, pageNo, Parameters.PAGE_SIZE, Parameters.BORC_SORT_BY);
             borcList = new ArrayList<>(borcPagingList.toList());
-            numberOfPages = borcPagingList.getTotalPages() > 0 ? borcPagingList.getTotalPages() : 1;
+            numberOfPages = borcPagingList.getTotalPages();
         }
         List<Integer> totalPages = NumberUtils.getTotalPages(numberOfPages);
 
@@ -252,15 +248,15 @@ public class RaporController {
         Map<Integer, Cari> cariMap = cariList.stream().collect(Collectors.toConcurrentMap(Cari::getId, Function.identity()));
         Map<Integer, Urun> urunMap = urunList.stream().collect(Collectors.toConcurrentMap(Urun::getId, Function.identity()));
 
-        List<Rapor> raporList = mergeTahsilatSiparisCariBorc(tahsilatList, siparisList, siparisMapByCariId, cariMap, urunMap, basTarihi, bitisTarihi);
+        List<Rapor> raporList = mergeTahsilatSiparisCariBorc(tahsilatList, siparisList, siparisMapByCariId, cariMap, urunMap, basTarihi);
 
         String cariAd = (cariId == 0) ? "tum" : cariMap.get(cariId).getCariAd();
-        Type raporTipi = tip.equals("T") ? Type.T : tip.equals("S") ? Type.S : Type.B;
+        Type raporTipi = Type.valueOf(tip);
         ExcelGenerator generator = new ExcelGenerator(raporList, raporTipi, cariAd, basTarihi, bitisTarihi);
         generator.generate(response);
     }
 
-    private List<Rapor> mergeTahsilatSiparisCariBorc(List<Tahsilat> tahsilatList, List<Siparis> siparisList, Map<Integer, Double> siparisMapByCariId, Map<Integer, Cari> cariMap, Map<Integer, Urun> urunMap, String basTarihi, String bitisTarihi) {
+    private List<Rapor> mergeTahsilatSiparisCariBorc(List<Tahsilat> tahsilatList, List<Siparis> siparisList, Map<Integer, Double> siparisMapByCariId, Map<Integer, Cari> cariMap, Map<Integer, Urun> urunMap, String basTarihi) {
         List<Rapor> raporList = new ArrayList<>();
         for (Tahsilat tahsilat : tahsilatList) {
             Rapor rapor = new Rapor();

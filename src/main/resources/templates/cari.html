@@ -85,10 +85,10 @@
                         <th class="text-white-50">Durum</th>
                         <th class="text-white-50">Aksiyon</th>
                     </tr>
-                    <tr th:if="${#lists.isEmpty(carilist)}">
+                    <tr th:if="${#lists.isEmpty(cariList)}">
                         <td colspan="5">No Records found. Add some...!</td>
                     </tr>
-                    <tr th:id="'tr_' + ${item.getId()}" th:each="item : ${carilist}" th:classappend="${registered eq item.getId()} ? 'new_update'">
+                    <tr th:id="'tr_' + ${item.getId()}" th:each="item : ${cariList}" th:classappend="${registered eq item.getId()} ? 'new_update'">
                         <td th:text="${item.getId()}"></td>
                         <td class="txt-deep-purple" th:text="${item.getCariAd()}"></td>
                         <td class="txt-purple" th:text="${item.getCariYetkili()}"></td>
